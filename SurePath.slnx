@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="SurePath.API/SurePath.API.csproj" />
+  <Project Path="SurePath.Core/SurePath.Core.csproj" />
+  <Project Path="SurePath.eCommerce/SurePath.Commerce.csproj" />
+  <Project Path="SurePath.Identity/SurePath.Identity.csproj" />
+  <Project Path="SurePath.Markets/SurePath.Markets.csproj" />
+  <Project Path="SurePath.Security/SurePath.Security.csproj" />
+</Solution>
