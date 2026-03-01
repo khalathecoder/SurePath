@@ -1,0 +1,272 @@
+﻿@{
+    ViewData["Title"] = "Trade Journal";
+    ViewData["ActiveNav"] = "journal";
+}
+
+<!-- HERO BAR -->
+<div class="hero-bar fadeup">
+    <div class="hero-label">// Markets · Trading Tools</div>
+    <div class="hero-title">Trade <span>Journal</span></div>
+    <div class="hero-desc">Log, track, and analyze your trades. Every entry builds your edge.</div>
+</div>
+
+<!-- SUBDOMAIN NAV -->
+<div class="subnav">
+    <a class="subnav-item active" asp-controller="Trade" asp-action="Journal">
+        <span class="dot"></span> Trade Journal
+    </a>
+    <a class="subnav-item" asp-controller="Trade" asp-action="RiskCalc">
+        <span class="dot"></span> Risk Calculator
+    </a>
+    <a class="subnav-item" href="#">
+        <span class="dot"></span> TheStrat Patterns
+    </a>
+    <a class="subnav-item" href="#">
+        <span class="dot"></span> Quarter Lines
+    </a>
+    <a class="subnav-item" href="#">
+        <span class="dot"></span> Analytics
+    </a>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="layout">
+
+    <!-- MAIN PANEL -->
+    <div class="main-panel">
+
+        <!-- JOURNAL FORM HEADER -->
+        <div class="section-hd fadeup fadeup-d1">
+            <div class="section-title">New Trade Entry</div>
+            <div class="section-meta" id="current-date"></div>
+        </div>
+
+        <div class="fadeup fadeup-d2">
+
+            <!-- CALCULATED RESULTS -->
+            <div class="result-panel" id="result-panel">
+                <div class="result-item">
+                    <div class="result-label">P&L ($)</div>
+                    <div class="result-value" id="res-pnl">—</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">R:R Ratio</div>
+                    <div class="result-value gold" id="res-rr">—</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">Risk ($)</div>
+                    <div class="result-value" id="res-risk">—</div>
+                </div>
+                <div class="result-item">
+                    <div class="result-label">% Gain/Loss</div>
+                    <div class="result-value" id="res-pct">—</div>
+                </div>
+            </div>
+
+            <!-- FORM -->
+            <div class="journal-form" id="trade-form">
+
+                <div class="form-group">
+                    <label>Symbol / Ticker</label>
+                    <input type="text" id="f-symbol" placeholder="ES, NQ, TSLA…" />
+                </div>
+
+                <div class="form-group">
+                    <label>Trade Date</label>
+                    <input type="date" id="f-date" />
+                </div>
+
+                <div class="form-group">
+                    <label>Direction</label>
+                    <div class="direction-toggle">
+                        <button class="dir-btn long active" onclick="setDir('long', this)">▲ Long</button>
+                        <button class="dir-btn short" onclick="setDir('short', this)">▼ Short</button>
+                    </div>
+                    <input type="hidden" id="f-direction" value="long" />
+                </div>
+
+                <div class="form-group">
+                    <label>Asset Type</label>
+                    <select id="f-type">
+                        <option value="futures">Futures</option>
+                        <option value="options">Options</option>
+                        <option value="stocks">Stocks</option>
+                        <option value="crypto">Crypto</option>
+                        <option value="forex">Forex</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Entry Price</label>
+                    <input type="number" id="f-entry" placeholder="0.00" step="0.01" oninput="calcResults()" />
+                </div>
+
+                <div class="form-group">
+                    <label>Exit Price</label>
+                    <input type="number" id="f-exit" placeholder="0.00" step="0.01" oninput="calcResults()" />
+                </div>
+
+                <div class="form-group">
+                    <label>Stop Loss</label>
+                    <input type="number" id="f-stop" placeholder="0.00" step="0.01" oninput="calcResults()" />
+                </div>
+
+                <div class="form-group">
+                    <label>Target</label>
+                    <input type="number" id="f-target" placeholder="0.00" step="0.01" oninput="calcResults()" />
+                </div>
+
+                <div class="form-group">
+                    <label>Contracts / Shares</label>
+                    <input type="number" id="f-size" placeholder="1" min="1" oninput="calcResults()" />
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="f-status">
+                        <option value="open">Open</option>
+                        <option value="closed">Closed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Setup / Strategy</label>
+                    <input type="text" id="f-setup" placeholder="e.g. TheStrat 2-2U, ICT BOS…" />
+                </div>
+
+                <div class="form-group">
+                    <label>Timeframe</label>
+                    <select id="f-tf">
+                        <option>1m</option>
+                        <option>5m</option>
+                        <option>15m</option>
+                        <option selected>1h</option>
+                        <option>4h</option>
+                        <option>Daily</option>
+                        <option>Weekly</option>
+                    </select>
+                </div>
+
+                <div class="form-group full">
+                    <label>Trade Notes / Rationale</label>
+                    <textarea id="f-notes" placeholder="Why did you take this trade? What did you see? What would you do differently?"></textarea>
+                </div>
+
+                <div class="form-group full">
+                    <label>Emotional State</label>
+                    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <button class="btn-ghost" style="font-size:11px; padding:6px 12px;" onclick="toggleEmotion(this)">😌 Calm</button>
+                        <button class="btn-ghost" style="font-size:11px; padding:6px 12px;" onclick="toggleEmotion(this)">😤 FOMO</button>
+                        <button class="btn-ghost" style="font-size:11px; padding:6px 12px;" onclick="toggleEmotion(this)">😰 Fear</button>
+                        <button class="btn-ghost" style="font-size:11px; padding:6px 12px;" onclick="toggleEmotion(this)">🎯 Confident</button>
+                        <button class="btn-ghost" style="font-size:11px; padding:6px 12px;" onclick="toggleEmotion(this)">😠 Revenge</button>
+                        <button class="btn-ghost" style="font-size:11px; padding:6px 12px;" onclick="toggleEmotion(this)">🧠 Process</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="form-actions">
+                <button class="btn-ghost" onclick="clearForm()">Clear</button>
+                <button class="btn-primary" onclick="addTrade()">+ Log Trade</button>
+            </div>
+
+        </div>
+
+        <!-- TRADE LOG -->
+        <div style="margin-top: 36px;" class="fadeup fadeup-d3">
+            <div class="section-hd">
+                <div class="section-title">Trade Log</div>
+                <div class="section-meta" id="trade-count">0 trades</div>
+            </div>
+            <div id="trade-log-wrap">
+                <div class="empty-state">
+                    <div class="empty-icon">📋</div>
+                    <div>No trades logged yet.</div>
+                    <div style="margin-top:4px; font-size:11px;">Fill out the form above and hit Log Trade.</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Session Stats</div>
+            <div class="stat-grid">
+                <div class="stat-card">
+                    <div class="stat-card-label">Total P&L</div>
+                    <div class="stat-card-value green" id="stat-total-pnl">$0.00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Win Rate</div>
+                    <div class="stat-card-value gold" id="stat-winrate">0%</div>
+                    <div class="winrate-bar"><div class="winrate-fill" id="stat-winbar" style="width:0%"></div></div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Trades</div>
+                    <div class="stat-card-value" id="stat-trades">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Avg R:R</div>
+                    <div class="stat-card-value gold" id="stat-rr">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Recent Entries</div>
+            <div id="recent-trades">
+                <div style="color: var(--text-mute); font-size: 11px; padding: 8px 0;">No entries yet.</div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Pre-Trade Checklist</div>
+            <div class="checklist" id="checklist">
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>Trend confirmed on HTF</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>R:R ≥ 1:2 verified</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>Stop loss placed & confirmed</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>Setup matches my playbook</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>Not trading out of FOMO</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>News / events checked</span>
+                </div>
+                <div class="check-item" onclick="toggleCheck(this)">
+                    <div class="check-box"></div>
+                    <span>Position size within risk limit</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Trader's Edge</div>
+            <div style="background: var(--bg3); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px;">
+                <div style="color: var(--text-dim); font-size: 11px; line-height: 1.7; font-style: italic;" id="quote-text">
+                    "The goal of a successful trader is to make the best trades. Money is secondary."
+                </div>
+                <div style="color: var(--text-mute); font-size: 10px; margin-top: 8px;" id="quote-author">— Alexander Elder</div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,541 @@
+﻿@{
+    ViewData["Title"] = "Risk Calculator";
+    ViewData["ActiveNav"] = "riskcalc";
+}
+
+<!-- HERO BAR -->
+<div class="hero-bar fadeup">
+    <div class="hero-label">// Markets · Position Sizing</div>
+    <div class="hero-title">Risk <span>Calculator</span></div>
+    <div class="hero-desc">Size your position precisely. Protect your capital on every trade.</div>
+</div>
+
+<!-- SUBDOMAIN NAV -->
+<div class="subnav">
+    <a class="subnav-item" asp-controller="Trade" asp-action="Journal">
+        <span class="dot"></span> Trade Journal
+    </a>
+    <a class="subnav-item active" href="#">
+        <span class="dot"></span> Risk Calculator
+    </a>
+    <a class="subnav-item" href="#">
+        <span class="dot"></span> TheStrat Patterns
+    </a>
+    <a class="subnav-item" href="#">
+        <span class="dot"></span> Quarter Lines
+    </a>
+    <a class="subnav-item" href="#">
+        <span class="dot"></span> Analytics
+    </a>
+</div>
+
+<!-- PAGE BODY -->
+<div class="rc-page">
+
+    <!-- LEFT: INPUTS -->
+    <div class="rc-inputs-col">
+
+        <!-- INSTRUMENT SELECTOR -->
+        <div class="rc-card fadeup fadeup-d1">
+            <div class="rc-card-title">Instrument</div>
+            <div class="instrument-tabs" id="instrument-tabs">
+                <button class="inst-tab active" data-inst="gold" onclick="setInstrument('gold', this)">
+                    <span class="inst-icon">⚜️</span>
+                    <span class="inst-label">Gold</span>
+                    <span class="inst-sub">GC Futures</span>
+                </button>
+                <button class="inst-tab" data-inst="es" onclick="setInstrument('es', this)">
+                    <span class="inst-icon">📈</span>
+                    <span class="inst-label">E-Mini S&P</span>
+                    <span class="inst-sub">ES Futures</span>
+                </button>
+                <button class="inst-tab" data-inst="nq" onclick="setInstrument('nq', this)">
+                    <span class="inst-icon">⚡</span>
+                    <span class="inst-label">Nasdaq</span>
+                    <span class="inst-sub">NQ Futures</span>
+                </button>
+                <button class="inst-tab" data-inst="options" onclick="setInstrument('options', this)">
+                    <span class="inst-icon">🎯</span>
+                    <span class="inst-label">Options</span>
+                    <span class="inst-sub">Stock / ETF</span>
+                </button>
+            </div>
+
+            <!-- Instrument spec badge -->
+            <div class="inst-spec" id="inst-spec">
+                <div class="spec-item"><span class="spec-label">Contract Size</span><span class="spec-val" id="spec-size">100 oz</span></div>
+                <div class="spec-item"><span class="spec-label">Tick Size</span><span class="spec-val" id="spec-tick">0.10</span></div>
+                <div class="spec-item"><span class="spec-label">Tick Value</span><span class="spec-val" id="spec-tickval">$10.00</span></div>
+                <div class="spec-item"><span class="spec-label">Exchange</span><span class="spec-val" id="spec-exchange">CME/COMEX</span></div>
+            </div>
+        </div>
+
+        <!-- SIZING METHOD -->
+        <div class="rc-card fadeup fadeup-d1">
+            <div class="rc-card-title">Sizing Method</div>
+            <div class="sizing-toggle">
+                <button class="size-btn active" id="btn-pct" onclick="setSizingMethod('pct', this)">% of Account</button>
+                <button class="size-btn" id="btn-fixed" onclick="setSizingMethod('fixed', this)">Fixed $ Risk</button>
+            </div>
+
+            <div id="sizing-pct-block">
+                <div class="rc-field-row">
+                    <div class="rc-field">
+                        <label>Account Balance ($)</label>
+                        <input type="number" id="rc-account" placeholder="50000" value="50000" oninput="calcRisk()" />
+                        <div class="presets">
+                            <button class="preset-btn" onclick="setPreset('rc-account', 25000)">$25K</button>
+                            <button class="preset-btn" onclick="setPreset('rc-account', 50000)">$50K</button>
+                            <button class="preset-btn" onclick="setPreset('rc-account', 100000)">$100K</button>
+                        </div>
+                    </div>
+                    <div class="rc-field">
+                        <label>Risk Per Trade (%)</label>
+                        <div class="input-with-presets">
+                            <input type="number" id="rc-risk-pct" placeholder="1.0" value="1" step=".5" oninput="calcRisk()" />
+                            <div class="presets">
+                                <button class="preset-btn" onclick="setPreset('rc-risk-pct', 0.5)">0.5%</button>
+                                <button class="preset-btn" onclick="setPreset('rc-risk-pct', 1)">1%</button>
+                                <button class="preset-btn" onclick="setPreset('rc-risk-pct', 2)">2%</button>
+                                <button class="preset-btn" onclick="setPreset('rc-risk-pct', 3)">3%</button>
+                                <button class="preset-btn" onclick="setPreset('rc-risk-pct', 5)">5%</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="sizing-fixed-block" style="display:none;">
+                <div class="rc-field">
+                    <label>Fixed Dollar Risk ($)</label>
+                    <div class="input-with-presets">
+                        <input type="number" id="rc-fixed-risk" placeholder="500" value="500" oninput="calcRisk()" />
+                        <div class="presets">
+                            <button class="preset-btn" onclick="setPreset('rc-fixed-risk', 250)">$250</button>
+                            <button class="preset-btn" onclick="setPreset('rc-fixed-risk', 500)">$500</button>
+                            <button class="preset-btn" onclick="setPreset('rc-fixed-risk', 1000)">$1K</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TRADE LEVELS -->
+        <div class="rc-card fadeup fadeup-d2">
+            <div class="rc-card-title">Trade Levels</div>
+
+            <div class="rc-field-row">
+                <div class="rc-field">
+                    <label>Direction</label>
+                    <div class="direction-toggle">
+                        <button class="dir-btn long active" onclick="setRCDir('long', this)">▲ Long</button>
+                        <button class="dir-btn short" onclick="setRCDir('short', this)">▼ Short</button>
+                    </div>
+                </div>
+                <div class="rc-field">
+                    <label>Entry Price</label>
+                    <input type="number" id="rc-entry" placeholder="2650.00" step="0.10" oninput="calcRisk()" />
+                </div>
+            </div>
+
+            <div class="rc-field-row">
+                <div class="rc-field">
+                    <label>Stop Loss</label>
+                    <input type="number" id="rc-stop" placeholder="2640.00" step="0.10" oninput="calcRisk()" />
+                </div>
+                <div class="rc-field">
+                    <label>Target</label>
+                    <input type="number" id="rc-target" placeholder="2680.00" step="0.10" oninput="calcRisk()" />
+                </div>
+            </div>
+
+            <!-- OPTIONS-ONLY FIELDS (hidden by default) -->
+            <div id="options-fields" style="display:none;">
+                <div class="rc-divider">Options Specifics</div>
+                <div class="rc-field-row">
+                    <div class="rc-field">
+                        <label>Premium Paid ($)</label>
+                        <input type="number" id="rc-premium" placeholder="3.50" step="0.01" oninput="calcRisk()" />
+                    </div>
+                    <div class="rc-field">
+                        <label>Delta</label>
+                        <input type="number" id="rc-delta" placeholder="0.45" step="0.01" min="0" max="1" oninput="calcRisk()" />
+                    </div>
+                </div>
+                <div class="rc-field-row">
+                    <div class="rc-field">
+                        <label>Strike Price</label>
+                        <input type="number" id="rc-strike" placeholder="150.00" step="0.50" oninput="calcRisk()" />
+                    </div>
+                    <div class="rc-field">
+                        <label>Contracts</label>
+                        <input type="number" id="rc-opt-contracts" placeholder="1" min="1" value="1" oninput="calcRisk()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- RIGHT: OUTPUTS -->
+    <div class="rc-outputs-col">
+
+        <!-- MAIN RESULT CARD -->
+        <div class="rc-result-hero fadeup fadeup-d2">
+            <div class="rh-label">Recommended Position Size</div>
+            <div class="rh-value" id="rc-contracts">—</div>
+            <div class="rh-unit" id="rc-contracts-label">contracts</div>
+            <div class="rh-divider"></div>
+            <div class="rh-sub" id="rc-position-value">Position value: —</div>
+        </div>
+
+        <!-- BREAKDOWN GRID -->
+        <div class="rc-breakdown fadeup fadeup-d3">
+            <div class="breakdown-item">
+                <div class="bd-icon red-icon">▼</div>
+                <div class="bd-content">
+                    <div class="bd-label">Max Dollar Risk</div>
+                    <div class="bd-value red" id="rc-dollar-risk">—</div>
+                    <div class="bd-sub" id="rc-risk-ticks">— ticks</div>
+                </div>
+            </div>
+            <div class="breakdown-item">
+                <div class="bd-icon green-icon">▲</div>
+                <div class="bd-content">
+                    <div class="bd-label">Dollar Reward</div>
+                    <div class="bd-value green" id="rc-dollar-reward">—</div>
+                    <div class="bd-sub" id="rc-reward-ticks">— ticks</div>
+                </div>
+            </div>
+            <div class="breakdown-item">
+                <div class="bd-icon gold-icon">⚖</div>
+                <div class="bd-content">
+                    <div class="bd-label">R:R Ratio</div>
+                    <div class="bd-value gold" id="rc-rr">—</div>
+                    <div class="bd-sub" id="rc-rr-rating">Enter levels to calculate</div>
+                </div>
+            </div>
+            <div class="breakdown-item">
+                <div class="bd-icon blue-icon">⇌</div>
+                <div class="bd-content">
+                    <div class="bd-label">Break-Even Price</div>
+                    <div class="bd-value blue" id="rc-breakeven">—</div>
+                    <div class="bd-sub" id="rc-be-distance">— from entry</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- R:R VISUAL BAR -->
+        <div class="rc-card rc-rr-bar-card fadeup fadeup-d3">
+            <div class="rc-card-title">Risk / Reward Visual</div>
+            <div class="rr-bar-wrap">
+                <div class="rr-bar-label-row">
+                    <span class="rr-risk-label" id="rr-risk-label">Risk: —</span>
+                    <span class="rr-entry-marker">ENTRY</span>
+                    <span class="rr-reward-label" id="rr-reward-label">Reward: —</span>
+                </div>
+                <div class="rr-bar-track">
+                    <div class="rr-risk-fill" id="rr-risk-fill" style="width:50%"></div>
+                    <div class="rr-entry-line"></div>
+                    <div class="rr-reward-fill" id="rr-reward-fill" style="width:50%"></div>
+                </div>
+                <div class="rr-bar-prices">
+                    <span id="rr-stop-price">Stop: —</span>
+                    <span id="rr-entry-price">Entry: —</span>
+                    <span id="rr-target-price">Target: —</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- QUICK SCENARIOS -->
+        <div class="rc-card fadeup fadeup-d3">
+            <div class="rc-card-title">Scenario Ladder</div>
+            <div class="rc-card-sub">What if you traded more or fewer contracts?</div>
+            <table class="scenario-table" id="scenario-table">
+                <thead>
+                    <tr>
+                        <th>Contracts</th>
+                        <th>Max Risk</th>
+                        <th>Max Reward</th>
+                        <th>% of Account</th>
+                    </tr>
+                </thead>
+                <tbody id="scenario-body">
+                    <tr><td colspan="4" style="text-align:center; color:var(--text-mute); padding:20px;">Enter trade levels to see scenarios</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- SEND TO JOURNAL -->
+        <div class="fadeup fadeup-d3" style="display:flex; gap:10px; justify-content:flex-end; margin-top:4px;">
+            <button class="btn-ghost" onclick="resetCalc()">Reset</button>
+            <button class="btn-primary" onclick="sendToJournal()">→ Send to Journal</button>
+        </div>
+
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // ============================================================
+        // INSTRUMENT DEFINITIONS
+        // ============================================================
+        const INSTRUMENTS = {
+            gold:    { label: 'Gold (GC)',      size: 100,  tick: 0.10, tickVal: 10.00,  exchange: 'CME/COMEX', unit: 'contracts', sizeName: '100 oz' },
+            es:      { label: 'E-Mini S&P',    size: 50,   tick: 0.25, tickVal: 12.50,  exchange: 'CME',       unit: 'contracts', sizeName: '$50 × price' },
+            nq:      { label: 'Nasdaq (NQ)',   size: 20,   tick: 0.25, tickVal: 5.00,   exchange: 'CME',       unit: 'contracts', sizeName: '$20 × price' },
+            options: { label: 'Options',       size: 100,  tick: 0.01, tickVal: 1.00,   exchange: 'CBOE/OCC',  unit: 'contracts', sizeName: '100 shares' }
+        };
+
+        let currentInstrument = 'gold';
+        let currentSizingMethod = 'pct';
+        let rcDirection = 'long';
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            updateSpecBadge();
+            calcRisk();
+        });
+
+        // ============================================================
+        // INSTRUMENT
+        // ============================================================
+        function setInstrument(inst, btn) {
+            currentInstrument = inst;
+            document.querySelectorAll('.inst-tab').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            updateSpecBadge();
+
+            const optFields = document.getElementById('options-fields');
+            if (optFields) optFields.style.display = inst === 'options' ? 'block' : 'none';
+
+            calcRisk();
+        }
+
+        function updateSpecBadge() {
+            const inst = INSTRUMENTS[currentInstrument];
+            document.getElementById('spec-size').textContent     = inst.sizeName;
+            document.getElementById('spec-tick').textContent     = inst.tick.toFixed(2);
+            document.getElementById('spec-tickval').textContent  = '$' + inst.tickVal.toFixed(2);
+            document.getElementById('spec-exchange').textContent = inst.exchange;
+        }
+
+        // ============================================================
+        // SIZING METHOD
+        // ============================================================
+        function setSizingMethod(method, btn) {
+            currentSizingMethod = method;
+            document.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById('sizing-pct-block').style.display  = method === 'pct'   ? 'block' : 'none';
+            document.getElementById('sizing-fixed-block').style.display = method === 'fixed' ? 'block' : 'none';
+            calcRisk();
+        }
+
+        // ============================================================
+        // DIRECTION
+        // ============================================================
+        function setRCDir(dir, btn) {
+            rcDirection = dir;
+            document.querySelectorAll('#rc-dir-toggle .dir-btn, .rc-inputs-col .dir-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            calcRisk();
+        }
+
+        // ============================================================
+        // PRESETS
+        // ============================================================
+        function setPreset(fieldId, val) {
+            const el = document.getElementById(fieldId);
+            if (el) { el.value = val; calcRisk(); }
+        }
+
+        // ============================================================
+        // CORE CALCULATION
+        // ============================================================
+        function calcRisk() {
+            const inst    = INSTRUMENTS[currentInstrument];
+            const entry   = parseFloat(document.getElementById('rc-entry')?.value)  || 0;
+            const stop    = parseFloat(document.getElementById('rc-stop')?.value)   || 0;
+            const target  = parseFloat(document.getElementById('rc-target')?.value) || 0;
+
+            // Dollar risk budget
+            let riskBudget = 0;
+            let accountBal = 0;
+            if (currentSizingMethod === 'pct') {
+                accountBal  = parseFloat(document.getElementById('rc-account')?.value) || 0;
+                const pct   = parseFloat(document.getElementById('rc-risk-pct')?.value) || 1;
+                riskBudget  = accountBal * (pct / 100);
+            } else {
+                riskBudget  = parseFloat(document.getElementById('rc-fixed-risk')?.value) || 0;
+                accountBal  = riskBudget * 100; // fallback for % display
+            }
+
+            if (entry === 0 || stop === 0) {
+                resetOutputs();
+                return;
+            }
+
+            // Points / ticks
+            const stopPts   = Math.abs(entry - stop);
+            const targetPts = target > 0 ? Math.abs(target - entry) : 0;
+            const stopTicks   = Math.round(stopPts / inst.tick);
+            const targetTicks = Math.round(targetPts / inst.tick);
+
+            // Risk & reward per contract
+            const riskPerContract   = stopTicks * inst.tickVal;
+            const rewardPerContract = targetTicks * inst.tickVal;
+
+            if (riskPerContract === 0) { resetOutputs(); return; }
+
+            // Position sizing
+            const rawContracts    = riskBudget / riskPerContract;
+            const contracts       = Math.max(1, Math.floor(rawContracts));
+            const actualRisk      = contracts * riskPerContract;
+            const actualReward    = contracts * rewardPerContract;
+            const rr              = rewardPerContract > 0 ? (rewardPerContract / riskPerContract) : null;
+            const positionValue   = entry * inst.size * contracts;
+
+            // Break-even (for options: entry + premium; for futures: just entry)
+            let breakeven = entry;
+            if (currentInstrument === 'options') {
+                const premium = parseFloat(document.getElementById('rc-premium')?.value) || 0;
+                breakeven = rcDirection === 'long' ? entry + premium : entry - premium;
+            }
+
+            const beDistance = Math.abs(breakeven - entry);
+
+            // ---- UPDATE UI ----
+            document.getElementById('rc-contracts').textContent       = contracts;
+            document.getElementById('rc-contracts-label').textContent = inst.unit;
+            document.getElementById('rc-position-value').textContent  = 'Position value: $' + positionValue.toLocaleString('en-US', { minimumFractionDigits: 2 });
+
+            document.getElementById('rc-dollar-risk').textContent   = '$' + actualRisk.toLocaleString('en-US', { minimumFractionDigits: 2 });
+            document.getElementById('rc-risk-ticks').textContent    = stopTicks + ' ticks · ' + stopPts.toFixed(2) + ' pts';
+
+            document.getElementById('rc-dollar-reward').textContent  = target > 0 ? '$' + actualReward.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '—';
+            document.getElementById('rc-reward-ticks').textContent   = target > 0 ? targetTicks + ' ticks · ' + targetPts.toFixed(2) + ' pts' : 'No target set';
+
+            const rrEl = document.getElementById('rc-rr');
+            rrEl.textContent = rr !== null ? '1 : ' + rr.toFixed(2) : '—';
+
+            const rrRating = document.getElementById('rc-rr-rating');
+            if (rr !== null) {
+                if (rr >= 3)       { rrRating.textContent = '🟢 Excellent setup'; rrRating.style.color = 'var(--green)'; }
+                else if (rr >= 2)  { rrRating.textContent = '🟡 Good setup';      rrRating.style.color = 'var(--gold)'; }
+                else if (rr >= 1)  { rrRating.textContent = '🟠 Marginal — proceed with caution'; rrRating.style.color = '#f97316'; }
+                else               { rrRating.textContent = '🔴 Poor R:R — avoid'; rrRating.style.color = 'var(--red)'; }
+            } else {
+                rrRating.textContent = 'Set a target to rate this trade';
+                rrRating.style.color = 'var(--text-mute)';
+            }
+
+            document.getElementById('rc-breakeven').textContent  = '$' + breakeven.toFixed(2);
+            document.getElementById('rc-be-distance').textContent = beDistance > 0 ? beDistance.toFixed(2) + ' pts from entry' : 'Same as entry';
+
+            // RR Visual Bar
+            updateRRBar(entry, stop, target);
+
+            // Scenario ladder
+            updateScenarios(riskPerContract, rewardPerContract, accountBal, inst, contracts);
+        }
+
+        // ============================================================
+        // R:R VISUAL BAR
+        // ============================================================
+        function updateRRBar(entry, stop, target) {
+            const stopPts   = entry > 0 && stop > 0   ? Math.abs(entry - stop)   : 0;
+            const targetPts = entry > 0 && target > 0 ? Math.abs(target - entry) : 0;
+            const total     = stopPts + targetPts;
+
+            const riskPct   = total > 0 ? (stopPts   / total * 100) : 50;
+            const rewardPct = total > 0 ? (targetPts / total * 100) : 50;
+
+            document.getElementById('rr-risk-fill').style.width   = riskPct + '%';
+            document.getElementById('rr-reward-fill').style.width = rewardPct + '%';
+
+            document.getElementById('rr-risk-label').textContent   = 'Risk: '   + stopPts.toFixed(2)   + ' pts';
+            document.getElementById('rr-reward-label').textContent = target > 0 ? 'Reward: ' + targetPts.toFixed(2) + ' pts' : 'No target';
+            document.getElementById('rr-stop-price').textContent   = stop   > 0 ? 'Stop: '   + stop.toFixed(2)   : 'Stop: —';
+            document.getElementById('rr-entry-price').textContent  = entry  > 0 ? 'Entry: '  + entry.toFixed(2)  : 'Entry: —';
+            document.getElementById('rr-target-price').textContent = target > 0 ? 'Target: ' + target.toFixed(2) : 'Target: —';
+        }
+
+        // ============================================================
+        // SCENARIO LADDER
+        // ============================================================
+        function updateScenarios(riskPerContract, rewardPerContract, accountBal, inst, recommended) {
+            const body = document.getElementById('scenario-body');
+            if (!body) return;
+
+            const maxContracts = Math.min(recommended + 4, 10);
+            const startAt      = Math.max(1, recommended - 2);
+            let rows = '';
+
+            for (let c = startAt; c <= maxContracts; c++) {
+                const risk    = c * riskPerContract;
+                const reward  = c * rewardPerContract;
+                const pctAcct = accountBal > 0 ? (risk / accountBal * 100) : 0;
+                const isRec   = c === recommended;
+                const riskClass = pctAcct > 3 ? 'red' : pctAcct > 2 ? 'gold' : 'green';
+
+                rows += `
+                    <tr class="${isRec ? 'scenario-rec' : ''}">
+                        <td>${c} ${isRec ? '<span class="rec-tag">REC</span>' : ''}</td>
+                        <td class="${riskClass}">$${risk.toLocaleString('en-US', { minimumFractionDigits: 2 })}</td>
+                        <td class="green">$${reward > 0 ? reward.toLocaleString('en-US', { minimumFractionDigits: 2 }) : '—'}</td>
+                        <td class="${riskClass}">${pctAcct.toFixed(2)}%</td>
+                    </tr>`;
+            }
+
+            body.innerHTML = rows;
+        }
+
+        // ============================================================
+        // RESET
+        // ============================================================
+        function resetOutputs() {
+            ['rc-contracts', 'rc-dollar-risk', 'rc-dollar-reward', 'rc-rr', 'rc-breakeven'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = '—';
+            });
+            document.getElementById('rc-position-value').textContent  = 'Position value: —';
+            document.getElementById('rc-risk-ticks').textContent      = '— ticks';
+            document.getElementById('rc-reward-ticks').textContent    = '— ticks';
+            document.getElementById('rc-be-distance').textContent     = '— from entry';
+            document.getElementById('rc-rr-rating').textContent       = 'Enter levels to calculate';
+            document.getElementById('scenario-body').innerHTML        = '<tr><td colspan="4" style="text-align:center; color:var(--text-mute); padding:20px;">Enter trade levels to see scenarios</td></tr>';
+        }
+
+        function resetCalc() {
+            ['rc-entry', 'rc-stop', 'rc-target', 'rc-premium', 'rc-delta', 'rc-strike'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.value = '';
+            });
+            resetOutputs();
+            updateRRBar(0, 0, 0);
+        }
+
+        // ============================================================
+        // SEND TO JOURNAL
+        // ============================================================
+        function sendToJournal() {
+            const entry  = document.getElementById('rc-entry')?.value;
+            const stop   = document.getElementById('rc-stop')?.value;
+            const target = document.getElementById('rc-target')?.value;
+
+            if (!entry) { alert('Enter at least an entry price to send to journal.'); return; }
+
+            // Store in sessionStorage so journal can pick it up
+            sessionStorage.setItem('rc_prefill', JSON.stringify({
+                entry, stop, target,
+                instrument: currentInstrument,
+                direction: rcDirection
+            }));
+
+            window.location.href = '/Trade/Journal';
+        }
+    </script>
+}
