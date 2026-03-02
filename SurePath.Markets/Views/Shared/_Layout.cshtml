@@ -15,37 +15,47 @@
     <!-- SCANLINE OVERLAY handled in CSS -->
 
     <header>
-        <div class="logo">
-            <div class="logo-badge">SP</div>
-            <div class="logo-wrap">
-                <span>SurePath Enterprises</span>
-                <span class="logo-sub">Markets Division</span>
+        <a asp-controller="Home" asp-action="Index" style="text-decoration:none;">
+            <div class="logo">
+                <div class="logo-badge">SP</div>
+                <div class="logo-wrap">
+                    <span>SurePath Enterprises</span>
+                    @if (ViewData["Division"] != null)
+                    {
+                        <span class="logo-sub">@ViewData["Division"]</span>
+                    }
+                </div>
             </div>
-        </div>
+        </a>
 
         <nav>
-            <a asp-controller="Home" asp-action="Index">Home</a>
-            <a asp-controller="Trade" asp-action="Journal" class="@(ViewData["ActiveNav"]?.ToString() == "journal" ? "active" : "")">Journal</a>
-            <a href="#">Risk Calc</a>
-            <a href="#">Analytics</a>
+            <a asp-controller="Trade" asp-action="Journal">Trading Desk</a>
+            <a asp-controller="DevSecurity" asp-action="Index">Dev/Security</a>
+            <a asp-controller="ECommerce" asp-action="Index">E-Commerce</a>
         </nav>
 
         <div class="header-right">
-            <div class="ticker-strip">
-                <div class="ticker-item">
-                    <span class="ticker-symbol">ES</span>
-                    <span class="ticker-price" id="t-es">5,842.25</span>
-                    <span class="ticker-change up" id="tc-es">▲ 0.32%</span>
-                </div>
-                <div class="ticker-item">
-                    <span class="ticker-symbol">NQ</span>
-                    <span class="ticker-price" id="t-nq">20,712.50</span>
-                    <span class="ticker-change dn" id="tc-nq">▼ 0.11%</span>
-                </div>
-                <div class="ticker-item">
-                    <span class="ticker-symbol">CL</span>
-                    <span class="ticker-price" id="t-cl">71.43</span>
-                    <span class="ticker-change up" id="tc-cl">▲ 0.64%</span>
+            <div class="tv-ticker-wrap">
+                <div class="tradingview-widget-container">
+                    <div class="tradingview-widget-container__widget"></div>
+                    <script type="text/javascript"
+                            src="https://s3.tradingview.com/external-embedding/embed-widget-ticker-tape.js" async>
+                                                {
+                                                    "symbols": [
+                            {"proName": "FOREXCOM:SPXUSD",  "title": "S&P 500"},
+                            {"proName": "AMEX:DIA", "title": "Dow (DIA)"},
+                            {"proName": "FOREXCOM:NSXUSD",  "title": "Nasdaq"},
+                            {"proName": "OANDA:XAUUSD",     "title": "Gold"},
+                            {"proName": "TVC:USOIL", "title": "Crude Oil"},
+                            {"proName": "BITSTAMP:BTCUSD",  "title": "Bitcoin"}
+                        ],
+                            "showSymbolLogo": false,
+                            "colorTheme": "dark",
+                            "isTransparent": true,
+                            "displayMode": "compact",
+                            "locale": "en"
+                        }
+                    </script>
                 </div>
             </div>
         </div>

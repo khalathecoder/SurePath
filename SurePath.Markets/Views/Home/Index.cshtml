@@ -1,8 +1,88 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "SurePath Enterprises";
+    Layout = "_CorpLayout";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- LAUNCHPAD -->
+<div class="lp-page">
+
+    <!-- BACKGROUND -->
+    <div class="lp-bg">
+        <div class="lp-bg-grid"></div>
+        <div class="lp-bg-glow"></div>
+    </div>
+
+    <!-- HERO -->
+    <div class="lp-hero fadeup">
+        <div class="lp-logo-mark">SP</div>
+        <div class="lp-brand">SurePath Enterprises</div>
+        <div class="lp-tagline">Building systems that create wealth.</div>
+        <div class="lp-sub">A private holding company operating across financial markets, commerce, and technology.</div>
+    </div>
+
+    <!-- DIVISION TILES -->
+    <div class="lp-tiles fadeup fadeup-d1">
+
+        <!-- TRADING -->
+        <a class="lp-tile trading-tile" asp-controller="Home" asp-action="Index" asp-area="">
+            <div class="lp-tile-inner">
+                <div class="lp-tile-top">
+                    <div class="lp-tile-icon">📈</div>
+                    <div class="lp-tile-tag trading-tag">Trading Desk</div>
+                </div>
+                <div class="lp-tile-name">SurePath Trading Desk</div>
+                <div class="lp-tile-desc">Proprietary trading tools, position sizing, and performance analytics for active futures and options traders.</div>
+                <div class="lp-tile-footer">
+                    <span class="lp-tile-link">Enter →</span>
+                    <span class="lp-tile-domain">trading.surepath.com</span>
+                </div>
+            </div>
+            <div class="lp-tile-accent trading-accent"></div>
+        </a>
+
+        <!-- COMMERCE -->
+        <a class="lp-tile commerce-tile" href="#" onclick="return false;">
+            <div class="lp-tile-inner">
+                <div class="lp-tile-top">
+                    <div class="lp-tile-icon">🏭</div>
+                    <div class="lp-tile-tag commerce-tag">Commerce</div>
+                </div>
+                <div class="lp-tile-name">SurePath Distribution</div>
+                <div class="lp-tile-desc">Wholesale product sourcing and distribution. Connecting quality suppliers with retail buyers across the United States.</div>
+                <div class="lp-tile-footer">
+                    <span class="lp-tile-link">Visit →</span>
+                    <span class="lp-tile-domain">surepathgoods.com</span>
+                </div>
+            </div>
+            <div class="lp-tile-accent commerce-accent"></div>
+        </a>
+
+        <!-- SECURITY / DEV -->
+        <a class="lp-tile security-tile" href="#" onclick="return false;">
+            <div class="lp-tile-inner">
+                <div class="lp-tile-top">
+                    <div class="lp-tile-icon">🛡️</div>
+                    <div class="lp-tile-tag security-tag">Technology</div>
+                </div>
+                <div class="lp-tile-name">SurePath Security</div>
+                <div class="lp-tile-desc">Cybersecurity consulting, secure software development, and technology solutions for modern businesses.</div>
+                <div class="lp-tile-footer">
+                    <span class="lp-tile-link">Coming Soon</span>
+                    <span class="lp-tile-domain">surepathsec.com</span>
+                </div>
+            </div>
+            <div class="lp-tile-accent security-accent"></div>
+        </a>
+
+    </div>
+
+    <!-- FOOTER -->
+    <div class="lp-footer fadeup fadeup-d2">
+        <div class="lp-footer-copy">© 2026 SurePath Enterprises LLC. All rights reserved.</div>
+        <div class="lp-footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
+
 </div>

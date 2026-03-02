@@ -1,0 +1,447 @@
+﻿/* ============================================================
+   SUREPATH ENTERPRISES — Corporate CSS (surepath.css)
+   Completely separate from markets.css
+   ============================================================ */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --bg: #07090d;
+    --bg2: #0b0e14;
+    --bg3: #0f1318;
+    --border: #1a2233;
+    --border2: #1e2a3d;
+    --text: #c8d4e3;
+    --text-dim: #566a85;
+    --text-mute: #2a3d52;
+    /* Division accents */
+    --trading: #00d68f;
+    --commerce: #f0b429;
+    --security: #38bdf8;
+    --radius: 8px;
+    --font-mono: 'DM Mono', monospace;
+    --font-head: 'Syne', sans-serif;
+}
+
+body.corp-body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+    /* Subtle noise texture */
+    body.corp-body::after {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+        pointer-events: none;
+        z-index: 9999;
+        opacity: 0.4;
+    }
+
+/* === CORP HEADER === */
+.corp-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 48px;
+    height: 60px;
+    background: rgba(7,9,13,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+}
+
+.corp-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+}
+
+.corp-logo-mark {
+    width: 32px;
+    height: 32px;
+    background: #fff;
+    color: #07090d;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 13px;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+}
+
+.corp-logo-name {
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.3px;
+}
+
+.corp-nav {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.corp-nav-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    padding: 7px 16px;
+    border-radius: 6px;
+    transition: all 0.15s;
+}
+
+    .corp-nav-link:hover {
+        color: var(--text);
+        background: var(--bg3);
+    }
+
+.corp-nav-contact {
+    border: 1px solid var(--border2);
+    color: var(--text);
+    margin-left: 8px;
+}
+
+    .corp-nav-contact:hover {
+        border-color: #fff;
+        color: #fff;
+        background: transparent;
+    }
+
+/* === LAUNCHPAD PAGE === */
+.lp-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 48px 60px;
+    position: relative;
+    gap: 0;
+}
+
+/* Background effects */
+.lp-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.lp-bg-grid {
+    position: absolute;
+    inset: 0;
+    background-image: linear-gradient(var(--border) 1px, transparent 1px), linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 60px 60px;
+    opacity: 0.25;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 100%);
+}
+
+.lp-bg-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 50% 40% at 50% 40%, rgba(255,255,255,0.025) 0%, transparent 70%);
+}
+
+/* Hero */
+.lp-hero {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    margin-bottom: 64px;
+}
+
+.lp-logo-mark {
+    width: 64px;
+    height: 64px;
+    background: #fff;
+    color: #07090d;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-head);
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin: 0 auto 24px;
+    box-shadow: 0 0 60px rgba(255,255,255,0.08);
+}
+
+.lp-brand {
+    font-family: var(--font-head);
+    font-size: 42px;
+    font-weight: 800;
+    color: #fff;
+    letter-spacing: -2px;
+    margin-bottom: 12px;
+    line-height: 1;
+}
+
+.lp-tagline {
+    font-size: 14px;
+    color: var(--text-dim);
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+}
+
+.lp-sub {
+    font-size: 11px;
+    color: var(--text-mute);
+    max-width: 440px;
+    margin: 0 auto;
+    line-height: 1.8;
+    letter-spacing: 0.3px;
+}
+
+/* Division tiles */
+.lp-tiles {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    width: 100%;
+    max-width: 1000px;
+    margin-bottom: 60px;
+}
+
+.lp-tile {
+    position: relative;
+    display: block;
+    text-decoration: none;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--bg2);
+    overflow: hidden;
+    transition: all 0.25s;
+    cursor: pointer;
+}
+
+    .lp-tile:hover {
+        transform: translateY(-4px);
+        text-decoration: none;
+    }
+
+.trading-tile:hover {
+    border-color: rgba(0,214,143,0.35);
+    box-shadow: 0 16px 48px rgba(0,214,143,0.08);
+}
+
+.commerce-tile:hover {
+    border-color: rgba(240,180,41,0.35);
+    box-shadow: 0 16px 48px rgba(240,180,41,0.08);
+}
+
+.security-tile:hover {
+    border-color: rgba(56,189,248,0.35);
+    box-shadow: 0 16px 48px rgba(56,189,248,0.08);
+}
+
+.lp-tile-inner {
+    padding: 28px 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 260px;
+}
+
+.lp-tile-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
+.lp-tile-icon {
+    font-size: 24px;
+}
+
+.lp-tile-tag {
+    font-size: 9px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 3px;
+}
+
+.trading-tag {
+    background: rgba(0,214,143,0.1);
+    color: var(--trading);
+}
+
+.commerce-tag {
+    background: rgba(240,180,41,0.1);
+    color: var(--commerce);
+}
+
+.security-tag {
+    background: rgba(56,189,248,0.1);
+    color: var(--security);
+}
+
+.lp-tile-name {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+}
+
+.lp-tile-desc {
+    font-size: 11px;
+    color: var(--text-dim);
+    line-height: 1.75;
+    flex: 1;
+}
+
+.lp-tile-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+}
+
+.lp-tile-link {
+    font-size: 12px;
+    font-weight: 500;
+    transition: color 0.15s;
+}
+
+.trading-tile .lp-tile-link {
+    color: var(--trading);
+}
+
+.commerce-tile .lp-tile-link {
+    color: var(--commerce);
+}
+
+.security-tile .lp-tile-link {
+    color: var(--text-mute);
+}
+
+.lp-tile-domain {
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.5px;
+}
+
+/* Accent bar on bottom */
+.lp-tile-accent {
+    height: 2px;
+    width: 100%;
+}
+
+.trading-accent {
+    background: var(--trading);
+}
+
+.commerce-accent {
+    background: var(--commerce);
+}
+
+.security-accent {
+    background: var(--security);
+}
+
+/* Footer */
+.lp-footer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1000px;
+}
+
+.lp-footer-copy {
+    font-size: 10px;
+    color: var(--text-mute);
+    letter-spacing: 0.5px;
+}
+
+.lp-footer-links {
+    display: flex;
+    gap: 20px;
+}
+
+    .lp-footer-links a {
+        font-size: 10px;
+        color: var(--text-mute);
+        text-decoration: none;
+        letter-spacing: 0.5px;
+        transition: color 0.15s;
+    }
+
+        .lp-footer-links a:hover {
+            color: var(--text-dim);
+        }
+
+/* Animations */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(16px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fadeup {
+    animation: fadeUp 0.5s ease both;
+}
+
+.fadeup-d1 {
+    animation-delay: 0.1s;
+}
+
+.fadeup-d2 {
+    animation-delay: 0.2s;
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    .lp-tiles {
+        grid-template-columns: 1fr;
+    }
+
+    .lp-brand {
+        font-size: 32px;
+    }
+
+    .corp-header {
+        padding: 0 24px;
+    }
+
+    .lp-page {
+        padding: 80px 24px 40px;
+    }
+}

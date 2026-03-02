@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Risk Calculator";
     ViewData["ActiveNav"] = "riskcalc";
+    ViewData["Division"] = "Markets Division";
 }
 
 <!-- HERO BAR -->
@@ -11,23 +12,7 @@
 </div>
 
 <!-- SUBDOMAIN NAV -->
-<div class="subnav">
-    <a class="subnav-item" asp-controller="Trade" asp-action="Journal">
-        <span class="dot"></span> Trade Journal
-    </a>
-    <a class="subnav-item active" href="#">
-        <span class="dot"></span> Risk Calculator
-    </a>
-    <a class="subnav-item" href="#">
-        <span class="dot"></span> TheStrat Patterns
-    </a>
-    <a class="subnav-item" href="#">
-        <span class="dot"></span> Quarter Lines
-    </a>
-    <a class="subnav-item" href="#">
-        <span class="dot"></span> Analytics
-    </a>
-</div>
+@await Html.PartialAsync("_MarketsSubNav")
 
 <!-- PAGE BODY -->
 <div class="rc-page">

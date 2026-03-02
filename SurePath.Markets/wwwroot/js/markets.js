@@ -395,3 +395,208 @@ function tickerUpdate() {
     nqEl.textContent = parseFloat(nudge(nq, 8)).toLocaleString('en-US', { minimumFractionDigits: 2 });
     clEl.textContent = nudge(cl, 0.15);
 }
+
+// ============================================================
+// SCREENSHOT PANEL — Append to markets.js
+// ============================================================
+
+let ssImages = [];         // Array of { id, dataUrl, label }
+let ssActiveLabel = null;  // Currently selected label chip
+let ssActiveLabelTarget = null; // Which image to label next
+
+// ============================================================
+// DRAG & DROP
+// ============================================================
+function ssDragOver(e) {
+    e.preventDefault();
+    document.getElementById('ss-dropzone')?.classList.add('drag-over');
+}
+
+function ssDragLeave(e) {
+    document.getElementById('ss-dropzone')?.classList.remove('drag-over');
+}
+
+function ssDrop(e) {
+    e.preventDefault();
+    document.getElementById('ss-dropzone')?.classList.remove('drag-over');
+    const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+    files.forEach(ssReadFile);
+}
+
+function ssFileSelected(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(ssReadFile);
+    e.target.value = ''; // reset so same file can be re-added
+}
+
+// ============================================================
+// READ FILE → BASE64
+// ============================================================
+function ssReadFile(file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const img = {
+            id: Date.now() + Math.random(),
+            dataUrl: e.target.result,
+            label: null,
+            fileName: file.name
+        };
+        ssImages.push(img);
+        ssRenderPreviews();
+    };
+    reader.readAsDataURL(file);
+}
+
+// ============================================================
+// RENDER PREVIEWS
+// ============================================================
+function ssRenderPreviews() {
+    const grid = document.getElementById('ss-preview-grid');
+    const countEl = document.getElementById('ss-count');
+    const labelRow = document.getElementById('ss-label-row');
+    if (!grid) return;
+
+    if (countEl) countEl.textContent = ssImages.length + ' image' + (ssImages.length !== 1 ? 's' : '');
+    if (labelRow) labelRow.style.display = ssImages.length > 0 ? 'flex' : 'none';
+
+    grid.innerHTML = ssImages.map((img, idx) => `
+        <div class="ss-preview-item" id="ss-item-${img.id}">
+            <img src="${img.dataUrl}"
+                 alt="${img.fileName || 'screenshot'}"
+                 onclick="ssOpenLightbox('${img.id}')"
+                 title="Click to enlarge" />
+            <div class="ss-img-toolbar">
+                <span class="ss-img-label ${img.label ? '' : 'unlabeled'}"
+                      onclick="ssPickLabel('${img.id}')">
+                    ${img.label || '+ Label'}
+                </span>
+                <div class="ss-img-actions">
+                    <button class="ss-img-btn" onclick="ssMoveUp(${idx})" title="Move up">↑</button>
+                    <button class="ss-img-btn" onclick="ssMoveDown(${idx})" title="Move down">↓</button>
+                    <button class="ss-img-btn delete" onclick="ssDeleteImage('${img.id}')" title="Remove">×</button>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// ============================================================
+// LABEL CHIPS
+// ============================================================
+function ssSetActiveLabel(label) {
+    // If a specific image is waiting for a label, apply it
+    if (ssActiveLabelTarget) {
+        const img = ssImages.find(i => i.id == ssActiveLabelTarget);
+        if (img) img.label = label;
+        ssActiveLabelTarget = null;
+        ssRenderPreviews();
+        // Clear active chip
+        document.querySelectorAll('.ss-chip').forEach(c => c.classList.remove('active'));
+        return;
+    }
+
+    // Otherwise toggle chip for next upload
+    ssActiveLabel = ssActiveLabel === label ? null : label;
+    document.querySelectorAll('.ss-chip').forEach(c => {
+        c.classList.toggle('active', c.textContent.trim() === ssActiveLabel);
+    });
+}
+
+function ssPickLabel(imgId) {
+    ssActiveLabelTarget = imgId;
+    // Highlight chips to prompt selection
+    document.querySelectorAll('.ss-chip').forEach(c => {
+        c.style.borderColor = 'var(--gold)';
+        c.style.color = 'var(--gold)';
+    });
+    setTimeout(() => {
+        document.querySelectorAll('.ss-chip').forEach(c => {
+            c.style.borderColor = '';
+            c.style.color = '';
+        });
+        ssActiveLabelTarget = null;
+    }, 3000);
+}
+
+// ============================================================
+// REORDER
+// ============================================================
+function ssMoveUp(idx) {
+    if (idx === 0) return;
+    [ssImages[idx - 1], ssImages[idx]] = [ssImages[idx], ssImages[idx - 1]];
+    ssRenderPreviews();
+}
+
+function ssMoveDown(idx) {
+    if (idx === ssImages.length - 1) return;
+    [ssImages[idx], ssImages[idx + 1]] = [ssImages[idx + 1], ssImages[idx]];
+    ssRenderPreviews();
+}
+
+// ============================================================
+// DELETE
+// ============================================================
+function ssDeleteImage(id) {
+    ssImages = ssImages.filter(i => i.id != id);
+    ssRenderPreviews();
+}
+
+// ============================================================
+// LIGHTBOX
+// ============================================================
+function ssOpenLightbox(id) {
+    const img = ssImages.find(i => i.id == id);
+    if (!img) return;
+
+    let lb = document.getElementById('ss-lightbox');
+    if (!lb) {
+        lb = document.createElement('div');
+        lb.id = 'ss-lightbox';
+        lb.className = 'ss-lightbox';
+        lb.innerHTML = `
+            <span class="ss-lightbox-close" onclick="ssCloseLightbox()">×</span>
+            <img id="ss-lb-img" src="" alt="screenshot" onclick="event.stopPropagation()" />
+            <div class="ss-lightbox-label" id="ss-lb-label"></div>`;
+        lb.onclick = ssCloseLightbox;
+        document.body.appendChild(lb);
+    }
+
+    document.getElementById('ss-lb-img').src = img.dataUrl;
+    const labelEl = document.getElementById('ss-lb-label');
+    if (labelEl) labelEl.textContent = img.label || img.fileName || '';
+    lb.classList.add('open');
+}
+
+function ssCloseLightbox() {
+    document.getElementById('ss-lightbox')?.classList.remove('open');
+}
+
+// Close lightbox on Escape
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') ssCloseLightbox();
+});
+
+// ============================================================
+// INTEGRATE WITH addTrade() — attach images to trade object
+// ============================================================
+// Override the addTrade function to include screenshots
+const _originalAddTrade = addTrade;
+window.addTrade = function () {
+    // We'll patch this in after addTrade runs by storing images
+    // and attaching them to the most recent trade
+    _originalAddTrade();
+
+    // Attach images to the trade that was just added (first in array)
+    if (ssImages.length > 0 && trades.length > 0) {
+        trades[0].screenshots = ssImages.map(img => ({
+            dataUrl: img.dataUrl,
+            label: img.label,
+            fileName: img.fileName
+        }));
+        localStorage.setItem('sp_trades', JSON.stringify(trades));
+    }
+
+    // Clear screenshot panel after logging
+    ssImages = [];
+    ssRenderPreviews();
+};
