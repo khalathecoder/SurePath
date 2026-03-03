@@ -1,5 +1,9 @@
-﻿<div class="subnav">
+<div class="subnav">
     <div class="subnav-left">
+        <a class="subnav-item @(ViewData["ActiveNav"]?.ToString() == "analytics" ? "active" : "")"
+           asp-controller="Trade" asp-action="Analytics">
+            <span class="dot"></span> Analytics
+        </a>
         <a class="subnav-item @(ViewData["ActiveNav"]?.ToString() == "journal" ? "active" : "")"
            asp-controller="Trade" asp-action="Journal">
             <span class="dot"></span> Trade Journal
@@ -8,26 +12,42 @@
            asp-controller="Trade" asp-action="RiskCalc">
             <span class="dot"></span> Risk Calculator
         </a>
-        <a class="subnav-item @(ViewData["ActiveNav"]?.ToString() == "analytics" ? "active" : "")"
-           href="#">
-            <span class="dot"></span> Analytics
-        </a>
     </div>
 
     <div class="subnav-right">
-        @if (User.Identity.IsAuthenticated)
+        @if (User.IsInRole("Demo"))
         {
-            <span class="subnav-user">👤 @User.Identity.Name</span>
-            <form method="post" asp-area="Identity" asp-page="/Account/Logout"
-                  asp-route-returnUrl="/Trade/Journal" style="display:inline;">
+            <span class="subnav-demo-badge">DEMO</span>
+        }
+        else if (User.Identity?.IsAuthenticated == true)
+        {
+            <span class="subnav-user">👤 @User.Identity.Name?.Split('@')[0]</span>
+            <form method="post" asp-controller="Auth" asp-action="Logout"
+                  asp-area="" style="display:inline;">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="subnav-auth-btn subnav-auth-out">Sign Out</button>
             </form>
         }
         else
         {
-            <a class="subnav-auth-btn" asp-area="Identity" asp-page="/Account/Login">Sign In</a>
-            <a class="subnav-auth-btn subnav-auth-primary" asp-area="Identity" asp-page="/Account/Register">Join Free</a>
+            <a class="subnav-auth-btn subnav-auth-primary"
+               asp-area="Identity" asp-page="/Account/Register">Create Account</a>
+            <a class="subnav-auth-btn"
+               asp-controller="Auth" asp-action="Login" asp-area="">Sign In</a>
         }
     </div>
 </div>
+
+@if (User.IsInRole("Demo"))
+{
+    <div class="demo-banner">
+        <span class="demo-banner-dot"></span>
+        <span>You're in <strong>Demo Mode</strong> — browsing sample trades. Log your own to track your real edge.</span>
+        <div class="demo-banner-actions">
+            <a asp-area="Identity" asp-page="/Account/Register"
+               class="demo-banner-btn demo-banner-btn-primary">Create Account</a>
+            <a asp-controller="Auth" asp-action="Login" asp-area=""
+               class="demo-banner-btn">Sign In</a>
+        </div>
+    </div>
+}

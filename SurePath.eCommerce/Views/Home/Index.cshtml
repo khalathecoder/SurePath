@@ -1,8 +1,198 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model SurePath.eCommerce.Controllers.InquiryViewModel
+@{
+    ViewData["Title"] = "SurePath Wholesale";
+    Layout = "_CorpLayout";
+    var success = ViewData["InquirySuccess"] as bool? ?? false;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="comm-page">
+
+    <!-- BACKGROUND -->
+    <div class="comm-bg">
+        <div class="comm-bg-grid"></div>
+        <div class="comm-bg-glow"></div>
+    </div>
+
+    <!-- HERO -->
+    <section class="comm-hero fadeup">
+        <div class="comm-eyebrow">
+            <span class="comm-dot"></span>
+            goods.spe.com &nbsp;·&nbsp; SurePath Wholesale
+        </div>
+        <h1 class="comm-h1">Wholesale Sourcing &amp;<br />Product Supply</h1>
+        <p class="comm-tagline">We source it. We supply it. We scale it.</p>
+        <p class="comm-sub">
+            Built for volume. We connect quality products to the channels where
+            buyers already shop — at the speed and scale modern retail demands.
+        </p>
+    </section>
+
+    <!-- OPERATIONS IMAGERY -->
+    <!-- Replace these placeholder images with licensed warehouse photos representing your actual team and operations -->
+    <section class="comm-ops fadeup fadeup-d1">
+
+        <div class="comm-ops-main">
+            <img
+                src="https://images.unsplash.com/photo-1553413077-190dd305871c?w=900&h=540&auto=format&fit=crop&q=80"
+                alt="SurePath warehouse operations"
+                class="comm-ops-img"
+                loading="lazy" />
+            <div class="comm-ops-stats">
+                <div class="comm-ops-stat">
+                    <span class="comm-ops-stat-num">500+</span>
+                    <span class="comm-ops-stat-label">Active SKUs</span>
+                </div>
+                <div class="comm-ops-stat">
+                    <span class="comm-ops-stat-num">48hr</span>
+                    <span class="comm-ops-stat-label">Avg. Ship Time</span>
+                </div>
+                <div class="comm-ops-stat">
+                    <span class="comm-ops-stat-num">50+</span>
+                    <span class="comm-ops-stat-label">Supplier Partners</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="comm-ops-side">
+            <!-- Replace with a photo of your team/warehouse workers -->
+            <img
+                src="https://images.unsplash.com/photo-1531973576160-7125cd663d86?w=460&h=540&auto=format&fit=crop&q=80"
+                alt="Team fulfilling orders"
+                class="comm-ops-img"
+                loading="lazy" />
+            <div class="comm-ops-side-label">Our team. Our operations.</div>
+        </div>
+
+    </section>
+
+    <!-- CAPABILITIES -->
+    <section class="comm-capabilities fadeup fadeup-d2">
+
+        <div class="comm-cap-item">
+            <div class="comm-cap-num">01</div>
+            <div class="comm-cap-body">
+                <div class="comm-cap-label">Product Sourcing</div>
+                <div class="comm-cap-desc">
+                    Established supplier relationships across domestic and overseas markets.
+                    Every product is vetted for quality, margin, and market demand before
+                    entering our active catalog.
+                </div>
+            </div>
+        </div>
+
+        <div class="comm-cap-item">
+            <div class="comm-cap-num">02</div>
+            <div class="comm-cap-body">
+                <div class="comm-cap-label">Retail Channel Sales</div>
+                <div class="comm-cap-desc">
+                    We supply through the retail channels that account for the majority of
+                    U.S. e-commerce volume. Category-optimized, competitively priced,
+                    and actively managed — entirely in-house.
+                </div>
+            </div>
+        </div>
+
+        <div class="comm-cap-item">
+            <div class="comm-cap-num">03</div>
+            <div class="comm-cap-body">
+                <div class="comm-cap-label">Fulfillment &amp; Logistics</div>
+                <div class="comm-cap-desc">
+                    Inventory planning, replenishment cycles, and end-to-end logistics
+                    coordination. Platform-native fulfillment keeps orders moving fast
+                    without the overhead of running your own warehouse.
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- CATEGORIES STRIP -->
+    <section class="comm-categories fadeup fadeup-d2">
+        <span class="comm-cat-label">// Categories we operate in</span>
+        <div class="comm-cat-tags">
+            <span class="comm-cat-tag">Home &amp; Kitchen</span>
+            <span class="comm-cat-tag">Tools &amp; Hardware</span>
+            <span class="comm-cat-tag">Health &amp; Personal Care</span>
+            <span class="comm-cat-tag">Sports &amp; Outdoors</span>
+            <span class="comm-cat-tag">Office &amp; Workplace</span>
+            <span class="comm-cat-tag">Pets</span>
+        </div>
+    </section>
+
+    <!-- INQUIRY FORM -->
+    <section class="comm-contact fadeup fadeup-d2" id="inquiry">
+
+        <div class="comm-contact-header">
+            <div class="comm-contact-title">Start a Conversation</div>
+            <div class="comm-contact-sub">
+                Whether you're a supplier looking for a sales channel or a buyer
+                looking for reliable wholesale pricing — let's talk.
+            </div>
+        </div>
+
+        @if (success)
+        {
+            <div class="comm-success">
+                // Inquiry received. We'll be in touch within one business day.
+            </div>
+        }
+        else
+        {
+            <form asp-controller="Home" asp-action="Index" method="post" class="comm-form">
+                @Html.AntiForgeryToken()
+
+                <div class="comm-form-row">
+                    <div class="comm-field">
+                        <label class="comm-label">Company</label>
+                        <input asp-for="CompanyName" class="comm-input" placeholder="Your company name" autocomplete="organization" />
+                        <span asp-validation-for="CompanyName" class="comm-error"></span>
+                    </div>
+                    <div class="comm-field">
+                        <label class="comm-label">Contact Name</label>
+                        <input asp-for="ContactName" class="comm-input" placeholder="Your name" autocomplete="name" />
+                        <span asp-validation-for="ContactName" class="comm-error"></span>
+                    </div>
+                </div>
+
+                <div class="comm-form-row">
+                    <div class="comm-field">
+                        <label class="comm-label">Email</label>
+                        <input asp-for="Email" class="comm-input" placeholder="you@company.com" autocomplete="email" />
+                        <span asp-validation-for="Email" class="comm-error"></span>
+                    </div>
+                    <div class="comm-field">
+                        <label class="comm-label">Inquiry Type</label>
+                        <select asp-for="InquiryType" class="comm-select">
+                            <option value="">— Select one —</option>
+                            <option value="Supplier">I'm a Supplier seeking a sales channel</option>
+                            <option value="Buyer">I'm a Buyer seeking wholesale pricing</option>
+                            <option value="Partnership">Partnership / Joint Venture</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <span asp-validation-for="InquiryType" class="comm-error"></span>
+                    </div>
+                </div>
+
+                <div class="comm-field">
+                    <label class="comm-label">Message</label>
+                    <textarea asp-for="Message" class="comm-textarea" rows="4"
+                              placeholder="Tell us about your product, volume expectations, or what you're looking for."></textarea>
+                    <span asp-validation-for="Message" class="comm-error"></span>
+                </div>
+
+                <div class="comm-form-footer">
+                    <span class="comm-form-note">No sales calls. Just a straight reply.</span>
+                    <button type="submit" class="comm-submit">Send Inquiry →</button>
+                </div>
+            </form>
+        }
+
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="comm-footer fadeup fadeup-d3">
+        <span class="comm-footer-copy">© 2026 SurePath Enterprises LLC</span>
+        <a href="https://localhost:7121" class="comm-footer-back">← SurePath Enterprises</a>
+    </footer>
+
 </div>

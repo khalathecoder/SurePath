@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/surepath.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/commerce.css" asp-append-version="true" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body class="corp-body">
+
+    <!-- HEADER -->
+    <header class="corp-header">
+        <a href="https://localhost:7121" class="corp-logo">
+            <div class="corp-logo-mark">SP</div>
+            <span class="corp-logo-name">SurePath Enterprises</span>
+        </a>
+        <nav class="corp-nav">
+            <a href="#inquiry" class="corp-nav-link corp-nav-contact">Wholesale Inquiry</a>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

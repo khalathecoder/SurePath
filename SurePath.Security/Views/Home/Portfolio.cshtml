@@ -1,0 +1,165 @@
+@{
+    ViewData["Title"] = "Portfolio — SurePath Technology";
+    Layout = "_CorpLayout";
+}
+
+<div class="sec-page pf-page">
+
+    <!-- BG -->
+    <div class="sec-bg">
+        <div class="sec-bg-grid"></div>
+        <div class="sec-bg-glow"></div>
+    </div>
+
+    <!-- HEADER ───────────────────────────────────────────────────────── -->
+    <section class="pf-header fadeup">
+        <div class="sec-eyebrow">
+            <span class="sec-dot"></span>
+            <span>Selected Work</span>
+            <span class="sec-divider">·</span>
+            <span>@DateTime.UtcNow.Year</span>
+        </div>
+        <h1 class="sec-headline" style="font-size: clamp(28px, 4vw, 40px);">
+            // Things I've built
+        </h1>
+        <p class="sec-sub">
+            A selection of projects across web platforms, internal tooling, and systems work.
+            Source and demos available on request.
+        </p>
+    </section>
+
+    <!-- PROJECT LIST ─────────────────────────────────────────────────── -->
+    <div class="pf-list fadeup fadeup-d1">
+
+        <!-- ── PROJECT 01 ── -->
+        <article class="pf-card featured">
+            <div class="pf-card-top">
+                <div class="pf-meta">
+                    <span class="pf-year">2024–25</span>
+                    <span class="pf-status live">Live</span>
+                </div>
+                <div class="pf-num">01</div>
+            </div>
+            <div class="pf-card-body">
+                <h2 class="pf-title">SurePath Enterprises Platform</h2>
+                <p class="pf-desc">
+                    Multi-division holding company platform spanning a corporate launchpad, proprietary trading desk
+                    (analytics dashboard, trade journal, risk calculator), and web consulting presence.
+                    Full auth system with role-based access, demo mode, and seeded sample data.
+                </p>
+                <div class="pf-tags">
+                    <span class="pf-tag">ASP.NET Core 10</span>
+                    <span class="pf-tag">Razor MVC</span>
+                    <span class="pf-tag">Identity</span>
+                    <span class="pf-tag">EF Core</span>
+                    <span class="pf-tag">SQLite</span>
+                    <span class="pf-tag">CSS / Vanilla JS</span>
+                </div>
+            </div>
+            <div class="pf-card-footer">
+                <span class="pf-scope">Web Platform · 3 Projects</span>
+                <a href="http://localhost:5196" class="pf-link" target="_blank">View Live →</a>
+            </div>
+        </article>
+
+        <!-- ── PROJECT 02 — placeholder ── -->
+        <article class="pf-card">
+            <div class="pf-card-top">
+                <div class="pf-meta">
+                    <span class="pf-year">2024</span>
+                    <span class="pf-status wip">In Progress</span>
+                </div>
+                <div class="pf-num">02</div>
+            </div>
+            <div class="pf-card-body">
+                <h2 class="pf-title">Project Name</h2>
+                <p class="pf-desc pf-placeholder">
+                    Short description of the project — what it does, who it's for, and what problem it solves.
+                    Keep it to two or three sentences.
+                </p>
+                <div class="pf-tags">
+                    <span class="pf-tag pf-tag-dim">Tech</span>
+                    <span class="pf-tag pf-tag-dim">Stack</span>
+                    <span class="pf-tag pf-tag-dim">Here</span>
+                </div>
+            </div>
+            <div class="pf-card-footer">
+                <span class="pf-scope">Category · Scale</span>
+                <span class="pf-link-mute">Link / Demo</span>
+            </div>
+        </article>
+
+        <!-- ── PROJECT 03 — placeholder ── -->
+        <article class="pf-card">
+            <div class="pf-card-top">
+                <div class="pf-meta">
+                    <span class="pf-year">2023</span>
+                    <span class="pf-status done">Shipped</span>
+                </div>
+                <div class="pf-num">03</div>
+            </div>
+            <div class="pf-card-body">
+                <h2 class="pf-title">Project Name</h2>
+                <p class="pf-desc pf-placeholder">
+                    Short description of the project — what it does, who it's for, and what problem it solves.
+                    Keep it to two or three sentences.
+                </p>
+                <div class="pf-tags">
+                    <span class="pf-tag pf-tag-dim">Tech</span>
+                    <span class="pf-tag pf-tag-dim">Stack</span>
+                    <span class="pf-tag pf-tag-dim">Here</span>
+                </div>
+            </div>
+            <div class="pf-card-footer">
+                <span class="pf-scope">Category · Scale</span>
+                <span class="pf-link-mute">Link / Demo</span>
+            </div>
+        </article>
+
+        <!-- ── PROJECT 04 — placeholder ── -->
+        <article class="pf-card">
+            <div class="pf-card-top">
+                <div class="pf-meta">
+                    <span class="pf-year">2023</span>
+                    <span class="pf-status done">Shipped</span>
+                </div>
+                <div class="pf-num">04</div>
+            </div>
+            <div class="pf-card-body">
+                <h2 class="pf-title">Project Name</h2>
+                <p class="pf-desc pf-placeholder">
+                    Short description of the project — what it does, who it's for, and what problem it solves.
+                    Keep it to two or three sentences.
+                </p>
+                <div class="pf-tags">
+                    <span class="pf-tag pf-tag-dim">Tech</span>
+                    <span class="pf-tag pf-tag-dim">Stack</span>
+                    <span class="pf-tag pf-tag-dim">Here</span>
+                </div>
+            </div>
+            <div class="pf-card-footer">
+                <span class="pf-scope">Category · Scale</span>
+                <span class="pf-link-mute">Link / Demo</span>
+            </div>
+        </article>
+
+    </div>
+
+    <!-- CTA ──────────────────────────────────────────────────────────── -->
+    <div class="pf-cta fadeup fadeup-d2">
+        <span class="pf-cta-text">Have a project in mind?</span>
+        <a asp-controller="Home" asp-action="Index" asp-fragment="contact" class="sec-submit pf-cta-btn">
+            Get in Touch →
+        </a>
+    </div>
+
+    <!-- FOOTER ────────────────────────────────────────────────────────── -->
+    <footer class="sec-footer fadeup fadeup-d3">
+        <span>© 2026 SurePath Enterprises LLC</span>
+        <span class="sec-footer-sep">·</span>
+        <a asp-controller="Home" asp-action="Index" class="sec-footer-link">← Consulting</a>
+        <span class="sec-footer-sep">·</span>
+        <a href="http://localhost:5196" class="sec-footer-link">SurePath Enterprises</a>
+    </footer>
+
+</div>

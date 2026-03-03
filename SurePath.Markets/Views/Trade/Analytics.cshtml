@@ -1,0 +1,519 @@
+@{
+    ViewData["Title"] = "Analytics";
+    ViewData["ActiveNav"] = "analytics";
+    ViewData["Division"] = "SurePath Markets";
+}
+
+<!-- SUBDOMAIN NAV -->
+@await Html.PartialAsync("_MarketsSubNav")
+
+<!-- ANALYTICS PAGE -->
+<div class="an-page fadeup fadeup-d1">
+
+    <!-- KPI ROW -->
+    <div class="an-kpi-row" id="an-kpi-row">
+        <div class="an-kpi">
+            <div class="an-kpi-label">NET P&L</div>
+            <div class="an-kpi-value" id="an-pnl">—</div>
+            <div class="an-kpi-sub" id="an-pnl-sub"></div>
+        </div>
+        <div class="an-kpi">
+            <div class="an-kpi-label">WIN RATE</div>
+            <div class="an-kpi-value" id="an-winrate">—</div>
+            <div class="an-kpi-sub" id="an-winrate-sub"></div>
+        </div>
+        <div class="an-kpi">
+            <div class="an-kpi-label">TRADES</div>
+            <div class="an-kpi-value" id="an-trades">—</div>
+            <div class="an-kpi-sub" id="an-trades-sub"></div>
+        </div>
+        <div class="an-kpi">
+            <div class="an-kpi-label">AVG R:R</div>
+            <div class="an-kpi-value gold" id="an-rr">—</div>
+            <div class="an-kpi-sub" id="an-rr-sub"></div>
+        </div>
+        <div class="an-kpi">
+            <div class="an-kpi-label">PROFIT FACTOR</div>
+            <div class="an-kpi-value" id="an-pf">—</div>
+            <div class="an-kpi-sub">gross wins / gross losses</div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID: curve + instruments -->
+    <div class="an-main-grid">
+
+        <!-- EQUITY CURVE -->
+        <div class="an-panel an-curve-panel">
+            <div class="an-panel-hd">
+                <span>Equity Curve</span>
+                <span class="an-panel-sub" id="an-curve-range"></span>
+            </div>
+            <div class="an-curve-wrap">
+                <svg id="an-curve-svg" class="an-curve-svg" preserveAspectRatio="none"></svg>
+                <div class="an-curve-empty" id="an-curve-empty" style="display:none">
+                    No closed trades yet
+                </div>
+            </div>
+        </div>
+
+        <!-- INSTRUMENT BREAKDOWN -->
+        <div class="an-panel an-instr-panel">
+            <div class="an-panel-hd"><span>By Instrument</span></div>
+            <div id="an-instr-list" class="an-instr-list"></div>
+        </div>
+
+    </div>
+
+    <!-- TRADE LOG -->
+    <div class="an-panel an-log-panel">
+        <div class="an-panel-hd">
+            <span>Trade Log</span>
+            <span class="an-panel-sub" id="an-log-count"></span>
+        </div>
+        <div class="an-table-wrap">
+            <table class="an-table" id="an-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Symbol</th>
+                        <th>Dir</th>
+                        <th>Setup</th>
+                        <th>TF</th>
+                        <th>Size</th>
+                        <th>P&L</th>
+                        <th>R:R</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="an-tbody"></tbody>
+            </table>
+            <div class="an-table-empty" id="an-table-empty" style="display:none">
+                No trades logged yet.
+            </div>
+        </div>
+    </div>
+
+</div>
+
+@section Styles {
+<style>
+/* ══════════════════════════════════════════════
+   ANALYTICS PAGE
+══════════════════════════════════════════════ */
+.an-page {
+    padding: 28px 32px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 1400px;
+}
+
+/* ── KPI row ── */
+.an-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+}
+
+.an-kpi {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+}
+
+.an-kpi-label {
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--text-mute);
+    margin-bottom: 8px;
+}
+
+.an-kpi-value {
+    font-family: var(--font-head);
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -1px;
+    line-height: 1;
+}
+
+.an-kpi-value.green  { color: var(--green); }
+.an-kpi-value.red    { color: var(--red); }
+.an-kpi-value.gold   { color: var(--gold); }
+
+.an-kpi-sub {
+    font-size: 10px;
+    color: var(--text-mute);
+    margin-top: 6px;
+    letter-spacing: 0.3px;
+}
+
+/* ── Main grid ── */
+.an-main-grid {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: 20px;
+}
+
+/* ── Panels ── */
+.an-panel {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.an-panel-hd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+}
+
+.an-panel-sub {
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    text-transform: none;
+    color: var(--text-mute);
+}
+
+/* ── Equity curve ── */
+.an-curve-wrap {
+    position: relative;
+    height: 220px;
+    padding: 16px 16px 8px;
+}
+
+.an-curve-svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.an-curve-empty {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.5px;
+}
+
+/* ── Instrument breakdown ── */
+.an-instr-list {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.an-instr-row {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.an-instr-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.an-instr-sym {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text);
+    letter-spacing: 1px;
+}
+
+.an-instr-pnl {
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+
+.an-instr-bar-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.an-instr-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+}
+
+/* ── Trade log table ── */
+.an-log-panel { }
+
+.an-table-wrap {
+    overflow-x: auto;
+}
+
+.an-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-mono);
+    font-size: 11px;
+}
+
+.an-table th {
+    padding: 10px 16px;
+    text-align: left;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    color: var(--text-mute);
+    border-bottom: 1px solid var(--border);
+    font-weight: 400;
+    white-space: nowrap;
+}
+
+.an-table td {
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-dim);
+    white-space: nowrap;
+}
+
+.an-table tbody tr:last-child td { border-bottom: none; }
+
+.an-table tbody tr:hover td { background: rgba(255,255,255,0.015); }
+
+.an-dir {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.an-dir-long  { background: rgba(0,214,143,0.12); color: var(--green); }
+.an-dir-short { background: rgba(255,71,87,0.12);  color: var(--red); }
+
+.an-status {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 9px;
+    letter-spacing: 1px;
+}
+
+.an-status-closed  { background: rgba(200,200,200,0.06); color: var(--text-dim); }
+.an-status-open    { background: rgba(56,189,248,0.1);   color: var(--blue); }
+.an-status-stopped { background: rgba(255,71,87,0.1);    color: var(--red); }
+
+.an-table-empty {
+    padding: 40px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.5px;
+}
+
+.an-pnl-pos { color: var(--green); }
+.an-pnl-neg { color: var(--red); }
+.an-pnl-nil { color: var(--text-mute); }
+</style>
+}
+
+@section Scripts {
+<script>
+(async function () {
+
+    // ── Load trades ────────────────────────────────────────────
+    let trades = [];
+    try {
+        const res = await fetch('/trade/gettrades');
+        trades = await res.json();
+    } catch {
+        return;
+    }
+
+    const closed = trades.filter(t => t.pnl != null).sort((a, b) => new Date(a.date) - new Date(b.date));
+    const wins   = closed.filter(t => t.pnl > 0);
+    const losses = closed.filter(t => t.pnl <= 0);
+
+    // ── KPI calculations ───────────────────────────────────────
+    const netPnl      = closed.reduce((s, t) => s + (t.pnl || 0), 0);
+    const winRate     = closed.length ? (wins.length / closed.length * 100) : 0;
+    const avgRR       = closed.length ? closed.reduce((s, t) => s + (t.rr || 0), 0) / closed.length : 0;
+    const grossWins   = wins.reduce((s, t) => s + t.pnl, 0);
+    const grossLosses = Math.abs(losses.reduce((s, t) => s + t.pnl, 0));
+    const profitFactor = grossLosses > 0 ? (grossWins / grossLosses) : grossWins > 0 ? '∞' : '—';
+    const openTrades  = trades.filter(t => t.status === 'open');
+
+    const fmt  = v => (v >= 0 ? '+' : '') + '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtS = v => '$' + Math.abs(v).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+    // ── Render KPIs ────────────────────────────────────────────
+    const pnlEl = document.getElementById('an-pnl');
+    pnlEl.textContent = fmtS(netPnl);
+    pnlEl.className = 'an-kpi-value ' + (netPnl > 0 ? 'green' : netPnl < 0 ? 'red' : '');
+    document.getElementById('an-pnl-sub').textContent =
+        openTrades.length ? `+ ${openTrades.length} open` : `${closed.length} closed trades`;
+
+    document.getElementById('an-winrate').textContent = closed.length ? winRate.toFixed(1) + '%' : '—';
+    document.getElementById('an-winrate-sub').textContent =
+        closed.length ? `${wins.length}W · ${losses.length}L` : '';
+
+    document.getElementById('an-trades').textContent = trades.length;
+    document.getElementById('an-trades-sub').textContent =
+        `${closed.length} closed · ${openTrades.length} open`;
+
+    const rrEl = document.getElementById('an-rr');
+    rrEl.textContent = closed.length ? avgRR.toFixed(2) + 'R' : '—';
+
+    const pfEl = document.getElementById('an-pf');
+    pfEl.textContent = typeof profitFactor === 'number' ? profitFactor.toFixed(2) + 'x' : profitFactor;
+    if (typeof profitFactor === 'number') {
+        pfEl.classList.add(profitFactor >= 1.5 ? 'green' : profitFactor >= 1 ? '' : 'red');
+    }
+
+    // ── Equity curve ───────────────────────────────────────────
+    const svg = document.getElementById('an-curve-svg');
+    if (closed.length >= 2) {
+        let cum = 0;
+        const points = closed.map(t => { cum += (t.pnl || 0); return cum; });
+
+        const W = svg.clientWidth  || svg.parentElement.clientWidth  || 600;
+        const H = svg.clientHeight || svg.parentElement.clientHeight || 196;
+        const pad = { t: 12, r: 12, b: 24, l: 8 };
+        const iW = W - pad.l - pad.r;
+        const iH = H - pad.t - pad.b;
+
+        const minY = Math.min(0, ...points);
+        const maxY = Math.max(0, ...points);
+        const rng  = maxY - minY || 1;
+
+        const xS = i => pad.l + (i / (points.length - 1)) * iW;
+        const yS = v => pad.t + (1 - (v - minY) / rng) * iH;
+        const z   = yS(0);
+
+        const ptStr = points.map((v, i) => `${xS(i).toFixed(1)},${yS(v).toFixed(1)}`).join(' ');
+        const last  = points.length - 1;
+        const isPos = points[last] >= 0;
+        const rgb   = isPos ? '0,214,143' : '255,71,87';
+        const clr   = isPos ? 'var(--green)' : 'var(--red)';
+
+        // Y-axis labels (3 levels)
+        const yLabels = [maxY, (maxY + minY) / 2, minY].map(v => ({
+            y: yS(v).toFixed(1),
+            label: (v >= 0 ? '+' : '') + '$' + (Math.abs(v) >= 1000
+                ? (v / 1000).toFixed(1) + 'k'
+                : Math.abs(v).toFixed(0))
+        }));
+
+        svg.innerHTML = `
+            <defs>
+                <linearGradient id="cgrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%"   stop-color="rgb(${rgb})" stop-opacity="0.18"/>
+                    <stop offset="100%" stop-color="rgb(${rgb})" stop-opacity="0"/>
+                </linearGradient>
+            </defs>
+            ${yLabels.map(l => `
+                <line x1="${pad.l}" y1="${l.y}" x2="${W - pad.r}" y2="${l.y}"
+                      stroke="var(--border)" stroke-width="1"/>
+                <text x="${pad.l - 4}" y="${l.y}" dy="3.5" text-anchor="end"
+                      fill="var(--text-mute)" font-size="8" font-family="DM Mono, monospace">${l.label}</text>
+            `).join('')}
+            <line x1="${pad.l}" y1="${z.toFixed(1)}" x2="${W - pad.r}" y2="${z.toFixed(1)}"
+                  stroke="var(--border2)" stroke-width="1" stroke-dasharray="4,3"/>
+            <polygon points="${xS(0).toFixed(1)},${z.toFixed(1)} ${ptStr} ${xS(last).toFixed(1)},${z.toFixed(1)}"
+                     fill="url(#cgrad)"/>
+            <polyline points="${ptStr}" fill="none" stroke="${clr}" stroke-width="1.5"
+                      stroke-linecap="round" stroke-linejoin="round"/>
+            ${points.map((v, i) => i === last ? `
+                <circle cx="${xS(i).toFixed(1)}" cy="${yS(v).toFixed(1)}" r="3"
+                        fill="${clr}" stroke="var(--bg2)" stroke-width="2"/>
+            ` : '').join('')}
+        `;
+
+        const first = closed[0]?.date;
+        const lastD = closed[last]?.date;
+        if (first && lastD)
+            document.getElementById('an-curve-range').textContent = first + ' → ' + lastD;
+    } else {
+        document.getElementById('an-curve-empty').style.display = 'flex';
+    }
+
+    // ── Instrument breakdown ───────────────────────────────────
+    const bySymbol = {};
+    closed.forEach(t => {
+        if (!bySymbol[t.sym]) bySymbol[t.sym] = { pnl: 0, count: 0, wins: 0 };
+        bySymbol[t.sym].pnl   += (t.pnl || 0);
+        bySymbol[t.sym].count += 1;
+        if (t.pnl > 0) bySymbol[t.sym].wins += 1;
+    });
+
+    const sortedSyms = Object.entries(bySymbol).sort((a, b) => Math.abs(b[1].pnl) - Math.abs(a[1].pnl));
+    const maxAbsPnl  = Math.max(...sortedSyms.map(([, v]) => Math.abs(v.pnl)), 1);
+    const instrList  = document.getElementById('an-instr-list');
+
+    if (sortedSyms.length) {
+        instrList.innerHTML = sortedSyms.map(([sym, data]) => {
+            const pct    = (Math.abs(data.pnl) / maxAbsPnl * 100).toFixed(1);
+            const isPos  = data.pnl >= 0;
+            const color  = isPos ? 'var(--green)' : 'var(--red)';
+            const winPct = (data.wins / data.count * 100).toFixed(0);
+            return `
+                <div class="an-instr-row">
+                    <div class="an-instr-meta">
+                        <span class="an-instr-sym">${sym}</span>
+                        <span class="an-instr-pnl" style="color:${color}">${fmt(data.pnl)}</span>
+                    </div>
+                    <div class="an-instr-bar-track">
+                        <div class="an-instr-bar-fill" style="width:${pct}%; background:${color}"></div>
+                    </div>
+                    <div style="font-size:9px; color:var(--text-mute); letter-spacing:0.5px">
+                        ${data.count} trade${data.count > 1 ? 's' : ''} · ${winPct}% win
+                    </div>
+                </div>`;
+        }).join('');
+    } else {
+        instrList.innerHTML = '<div style="font-size:11px; color:var(--text-mute); padding: 8px 0">No data</div>';
+    }
+
+    // ── Trade log table ────────────────────────────────────────
+    const tbody = document.getElementById('an-tbody');
+    const sorted = [...trades].sort((a, b) => new Date(b.date) - new Date(a.date));
+
+    document.getElementById('an-log-count').textContent = `${sorted.length} total`;
+
+    if (sorted.length) {
+        document.getElementById('an-table-empty').style.display = 'none';
+        tbody.innerHTML = sorted.map(t => {
+            const pnlClass = t.pnl == null ? 'an-pnl-nil' : t.pnl > 0 ? 'an-pnl-pos' : 'an-pnl-neg';
+            const pnlText  = t.pnl == null ? '—' : fmt(t.pnl);
+            const rrText   = t.rr  != null ? t.rr.toFixed(2) + 'R' : '—';
+            const dirClass = t.dir === 'long' ? 'an-dir-long' : 'an-dir-short';
+            const dirLabel = t.dir === 'long' ? '▲ L' : '▼ S';
+            const stClass  = `an-status-${t.status}`;
+            return `<tr>
+                <td>${t.date}</td>
+                <td style="color:var(--text); font-weight:500">${t.sym}</td>
+                <td><span class="an-dir ${dirClass}">${dirLabel}</span></td>
+                <td>${t.setup || '—'}</td>
+                <td>${t.tf   || '—'}</td>
+                <td>${t.size}</td>
+                <td class="${pnlClass}" style="font-weight:500">${pnlText}</td>
+                <td style="color:var(--gold)">${rrText}</td>
+                <td><span class="an-status ${stClass}">${t.status}</span></td>
+            </tr>`;
+        }).join('');
+    } else {
+        document.getElementById('an-table-empty').style.display = 'block';
+    }
+
+})();
+</script>
+}

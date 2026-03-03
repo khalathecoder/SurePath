@@ -52,6 +52,10 @@ window.onload = function () {
     updateStatusTime();
     setInterval(updateStatusTime, 1000);
 
+    // Market session indicators
+    updateMarketSessions();
+    setInterval(updateMarketSessions, 60000);
+
     // Start ticker simulation
     setInterval(tickerUpdate, 3000);
 
@@ -575,6 +579,53 @@ function ssCloseLightbox() {
 document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') ssCloseLightbox();
 });
+
+// ============================================================
+// MARKET SESSIONS
+// ============================================================
+function msGetLocal(timezone) {
+    const now = new Date();
+    const local = new Date(now.toLocaleString('en-US', { timeZone: timezone }));
+    return { h: local.getHours(), m: local.getMinutes(), day: local.getDay() };
+}
+
+function msInRange(timezone, startH, startM, endH, endM) {
+    const { h, m, day } = msGetLocal(timezone);
+    if (day === 0 || day === 6) return false;
+    const mins = h * 60 + m;
+    return mins >= startH * 60 + startM && mins < endH * 60 + endM;
+}
+
+function isNYOpen()     { return msInRange('America/New_York', 9, 30, 16, 0); }
+function isLondonOpen() { return msInRange('Europe/London', 8, 0, 16, 30); }
+function isTokyoOpen() {
+    const { h, m, day } = msGetLocal('Asia/Tokyo');
+    if (day === 0 || day === 6) return false;
+    const mins = h * 60 + m;
+    return (mins >= 9 * 60 && mins < 11 * 60 + 30) ||
+           (mins >= 12 * 60 + 30 && mins < 15 * 60);
+}
+function isFuturesOpen() {
+    const { h, m, day } = msGetLocal('America/New_York');
+    if (day === 6) return false;
+    const mins = h * 60 + m;
+    if (mins >= 17 * 60 && mins < 18 * 60) return false; // daily break 5–6 PM ET
+    if (day === 0) return mins >= 18 * 60;               // Sunday: open from 6 PM
+    return true;
+}
+
+function updateMarketSessions() {
+    [
+        { id: 'ms-ny',  check: isNYOpen },
+        { id: 'ms-ldn', check: isLondonOpen },
+        { id: 'ms-tky', check: isTokyoOpen },
+        { id: 'ms-fut', check: isFuturesOpen },
+    ].forEach(({ id, check }) => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.classList.toggle('open', check());
+    });
+}
 
 // ============================================================
 // INTEGRATE WITH addTrade() — attach images to trade object

@@ -8,14 +8,14 @@ namespace SurePath.Markets.Areas.Identity.Pages.Account
 {
     public class RegisterModel : PageModel
     {
-        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserManager<ApplicationUser>   _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
 
         public RegisterModel(
-            UserManager<ApplicationUser> userManager,
+            UserManager<ApplicationUser>   userManager,
             SignInManager<ApplicationUser> signInManager)
         {
-            _userManager = userManager;
+            _userManager   = userManager;
             _signInManager = signInManager;
         }
 
@@ -27,13 +27,10 @@ namespace SurePath.Markets.Areas.Identity.Pages.Account
             [Required]
             public string DisplayName { get; set; }
 
-            [Required]
-            [EmailAddress]
+            [Required, EmailAddress]
             public string Email { get; set; }
 
-            [Required]
-            [DataType(DataType.Password)]
-            [MinLength(8)]
+            [Required, DataType(DataType.Password), MinLength(8)]
             public string Password { get; set; }
 
             [DataType(DataType.Password)]
@@ -43,26 +40,31 @@ namespace SurePath.Markets.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPostAsync()
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return Page();
+
+            var user = new ApplicationUser
             {
-                var user = new ApplicationUser
-                {
-                    UserName = Input.Email,
-                    Email = Input.Email,
-                    DisplayName = Input.DisplayName
-                };
+                UserName    = Input.Email,
+                Email       = Input.Email,
+                DisplayName = Input.DisplayName,
+                JoinedAt    = DateTime.UtcNow,
+                EmailConfirmed = true
+            };
 
-                var result = await _userManager.CreateAsync(user, Input.Password);
+            var result = await _userManager.CreateAsync(user, Input.Password);
 
-                if (result.Succeeded)
-                {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToPage("/Trade/Journal");
-                }
+            if (result.Succeeded)
+            {
+                // New registrations get the Trader role
+                await _userManager.AddToRoleAsync(user, "Trader");
 
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
+                await _signInManager.SignInAsync(user, isPersistent: false);
+                return Redirect("/trade/journal");
             }
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError(string.Empty, error.Description);
 
             return Page();
         }

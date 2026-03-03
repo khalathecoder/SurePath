@@ -1,4 +1,4 @@
-﻿/* ============================================================
+/* ============================================================
    SUREPATH ENTERPRISES — Corporate CSS (surepath.css)
    Completely separate from markets.css
    ============================================================ */
@@ -346,7 +346,7 @@ body.corp-body {
 }
 
 .security-tile .lp-tile-link {
-    color: var(--text-mute);
+    color: var(--security);
 }
 
 .lp-tile-domain {
@@ -512,7 +512,7 @@ body.corp-body {
         color: var(--trading);
     }
 
-/* === A: TYPEWRITER CURSOR === */
+/* === TYPEWRITER CURSOR === */
 .lp-cursor {
     display: inline-block;
     color: var(--text-dim);
@@ -526,7 +526,7 @@ body.corp-body {
     50%       { opacity: 0; }
 }
 
-/* === B: STAT STRIP === */
+/* === STAT STRIP === */
 .lp-stat-strip {
     position: relative;
     z-index: 1;
@@ -581,7 +581,7 @@ body.corp-body {
     transition: background 0.3s, box-shadow 0.3s;
 }
 
-/* === C: TRADING TILE MARKET BADGE === */
+/* === TRADING TILE MARKET BADGE === */
 .lp-mkt-badge {
     display: inline-flex;
     align-items: center;

@@ -19,10 +19,28 @@
             <span class="corp-logo-name">SurePath Enterprises</span>
         </a>
         <nav class="corp-nav">
-            <a asp-controller="Trade" asp-action="Journal" class="corp-nav-link">Trading Desk</a>
+            <a asp-controller="Trade" asp-action="Analytics" class="corp-nav-link">SurePath Markets</a>
             <a href="#" class="corp-nav-link">Commerce</a>
             <a href="#" class="corp-nav-link">Technology</a>
-            <a href="#" class="corp-nav-link corp-nav-contact">Contact</a>
+
+            @* Demo is a Trading Desk concept — treat demo users as guests on the corp homepage *@
+            @if (User.Identity?.IsAuthenticated == true && !User.IsInRole("Demo"))
+            {
+                @if (User.IsInRole("Admin"))
+                {
+                    <span class="corp-nav-role-badge admin-badge">ADMIN</span>
+                }
+                <form method="post" asp-controller="Auth" asp-action="Logout"
+                      style="display:inline; margin-left:4px;">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="corp-nav-link corp-nav-signout">Sign Out</button>
+                </form>
+            }
+            else
+            {
+                <a href="#" class="corp-nav-link">Contact</a>
+                <a asp-controller="Auth" asp-action="Login" class="corp-nav-link corp-nav-contact">Sign In</a>
+            }
         </nav>
     </header>
 

@@ -1,8 +1,145 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@model ContactViewModel
+@{
+    ViewData["Title"] = "SurePath Technology";
+    Layout = "_CorpLayout";
+    var sent = ViewData["ContactSuccess"] as bool? == true;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="sec-page">
+
+    <!-- BG -->
+    <div class="sec-bg">
+        <div class="sec-bg-grid"></div>
+        <div class="sec-bg-glow"></div>
+    </div>
+
+    <!-- HERO ─────────────────────────────────────────────────────────── -->
+    <section class="sec-hero fadeup">
+        <div class="sec-eyebrow">
+            <span class="sec-dot"></span>
+            <span>sec.spe.com</span>
+            <span class="sec-divider">·</span>
+            <span>SurePath Technology</span>
+        </div>
+
+        <h1 class="sec-headline">
+            Web Development<br />&amp; Digital Consulting
+        </h1>
+
+        <p class="sec-sub">
+            Turning requirements into shipped software. Available for contract engagements —
+            from greenfield builds to legacy rescues.
+        </p>
+    </section>
+
+    <!-- CAPABILITIES ────────────────────────────────────────────────── -->
+    <section class="sec-capabilities fadeup fadeup-d1">
+        <div class="cap-item">
+            <span class="cap-num">01</span>
+            <span class="cap-label">Web Applications</span>
+            <span class="cap-desc">Full-stack .NET / React, REST APIs, SaaS platforms, internal tools.</span>
+        </div>
+        <div class="cap-divider"></div>
+        <div class="cap-item">
+            <span class="cap-num">02</span>
+            <span class="cap-label">Cybersecurity</span>
+            <span class="cap-desc">Secure architecture, code audits, penetration testing, threat modeling.</span>
+        </div>
+        <div class="cap-divider"></div>
+        <div class="cap-item">
+            <span class="cap-num">03</span>
+            <span class="cap-label">Tech Strategy</span>
+            <span class="cap-desc">Stack selection, architecture review, delivery planning, technical due diligence.</span>
+        </div>
+    </section>
+
+    <!-- PORTFOLIO NUDGE ──────────────────────────────────────────────── -->
+    <div class="sec-portfolio-nudge fadeup fadeup-d2">
+        <span class="sec-pf-label">// Selected Work</span>
+        <a asp-controller="Home" asp-action="Portfolio" class="sec-pf-link">View Portfolio →</a>
+    </div>
+
+    <!-- CONTACT FORM ─────────────────────────────────────────────────── -->
+    <section class="sec-contact fadeup fadeup-d2" id="contact">
+
+        <div class="sec-contact-header">
+            <div class="sec-contact-title">Start a Project</div>
+            <div class="sec-contact-sub">Describe what you need — I'll get back within 24 hours.</div>
+        </div>
+
+        @if (sent)
+        {
+            <div class="sec-success fadeup">
+                <span class="sec-success-icon">✓</span>
+                <div>
+                    <div class="sec-success-title">Message received.</div>
+                    <div class="sec-success-body">I'll follow up to your email within 24 hours.</div>
+                </div>
+            </div>
+        }
+        else
+        {
+            <form method="post" asp-controller="Home" asp-action="Contact" class="sec-form">
+                @Html.AntiForgeryToken()
+
+                @if (!ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0)
+                {
+                    <div class="sec-error">
+                        @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                        {
+                            <span>@err.ErrorMessage</span>
+                        }
+                    </div>
+                }
+
+                <div class="sec-form-row">
+                    <div class="sec-field">
+                        <label class="sec-label">Name</label>
+                        <input asp-for="Name" type="text" class="sec-input"
+                               placeholder="Your name" autocomplete="name" />
+                    </div>
+                    <div class="sec-field">
+                        <label class="sec-label">Email</label>
+                        <input asp-for="Email" type="email" class="sec-input"
+                               placeholder="you@company.com" autocomplete="email" />
+                    </div>
+                </div>
+
+                <div class="sec-field">
+                    <label class="sec-label">Service</label>
+                    <select asp-for="Service" class="sec-input sec-select">
+                        <option value="">— Select a service —</option>
+                        <option value="Web Application">Web Application</option>
+                        <option value="API / Backend">API / Backend</option>
+                        <option value="Cybersecurity Audit">Cybersecurity Audit</option>
+                        <option value="Tech Strategy">Tech Strategy</option>
+                        <option value="Other">Other / Not Sure</option>
+                    </select>
+                </div>
+
+                <div class="sec-field">
+                    <label class="sec-label">Project Brief</label>
+                    <textarea asp-for="Message" class="sec-input sec-textarea"
+                              placeholder="What are you building? What's broken? What's the timeline?"></textarea>
+                </div>
+
+                <div class="sec-form-footer">
+                    <span class="sec-form-note">No spam. No sales call. Just a reply.</span>
+                    <button type="submit" class="sec-submit">Send Inquiry →</button>
+                </div>
+
+            </form>
+        }
+
+    </section>
+
+    <!-- FOOTER ────────────────────────────────────────────────────────── -->
+    <footer class="sec-footer fadeup fadeup-d3">
+        <span>© 2026 SurePath Enterprises LLC</span>
+        <span class="sec-footer-sep">·</span>
+        <a href="http://localhost:5196" class="sec-footer-link">← SurePath Enterprises</a>
+        <span class="sec-footer-sep">·</span>
+        <a asp-controller="Home" asp-action="Portfolio" class="sec-footer-link">Portfolio</a>
+    </footer>
+
 </div>

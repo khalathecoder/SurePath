@@ -1,0 +1,41 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "SurePath.Core",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SurePath.Core/SurePath.Core.csproj"],
+      "port": 5196
+    },
+    {
+      "name": "SurePath.Markets",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SurePath.Markets/SurePath.Markets.csproj"],
+      "port": 5063
+    },
+    {
+      "name": "SurePath.Security",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SurePath.Security/SurePath.Security.csproj"],
+      "port": 5197
+    },
+    {
+      "name": "SurePath.eCommerce",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SurePath.eCommerce/SurePath.Commerce.csproj"],
+      "port": 5232
+    },
+    {
+      "name": "SurePath.API",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SurePath.API/SurePath.API.csproj"],
+      "port": 5053
+    },
+    {
+      "name": "SurePath.Identity",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "SurePath.Identity/SurePath.Identity.csproj"],
+      "port": 5220
+    }
+  ]
+}

@@ -8,7 +8,9 @@ namespace SurePath.Markets.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            // Corporate homepage now lives in SurePath.Core.
+            // Anyone hitting the Markets root gets redirected to the Trading Desk.
+            return RedirectToAction("Analytics", "Trade");
         }
 
         public IActionResult Privacy()

@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewData["Title"] = "SurePath Enterprises";
     Layout = "_CorpLayout";
 }
@@ -16,29 +16,72 @@
     <div class="lp-hero fadeup">
         <div class="lp-logo-mark">SP</div>
         <div class="lp-brand">SurePath Enterprises</div>
-        <div class="lp-tagline">Building systems that create wealth.</div>
+        <!-- A: Typewriter tagline -->
+        <div class="lp-tagline">
+            <span id="lp-typewriter"></span><span class="lp-cursor">|</span>
+        </div>
         <div class="lp-sub">A private holding company operating across financial markets, commerce, and technology.</div>
     </div>
 
+    <!-- B: STAT STRIP -->
+    <div class="lp-stat-strip fadeup fadeup-d1">
+        <div class="lp-strip-item">
+            <span class="lp-strip-label">Est.</span>
+            <span class="lp-strip-val">2024</span>
+        </div>
+        <div class="lp-strip-sep">·</div>
+        <div class="lp-strip-item">
+            <span class="lp-strip-val">3</span>
+            <span class="lp-strip-label">Divisions</span>
+        </div>
+        <div class="lp-strip-sep">·</div>
+        <div class="lp-strip-item">
+            <span class="lp-strip-dot" id="lp-mkt-dot"></span>
+            <span class="lp-strip-label">Markets</span>
+            <span class="lp-strip-val" id="lp-mkt-status">—</span>
+        </div>
+        <div class="lp-strip-sep">·</div>
+        <div class="lp-strip-item">
+            <span class="lp-strip-val lp-mono" id="lp-et-clock">—</span>
+            <span class="lp-strip-label">ET</span>
+        </div>
+    </div>
+
     <!-- DIVISION TILES -->
-    <div class="lp-tiles fadeup fadeup-d1">
+    <div class="lp-tiles fadeup fadeup-d2">
 
         <!-- TRADING -->
-        <a class="lp-tile trading-tile" asp-controller="Home" asp-action="Index" asp-area="">
+        <div class="lp-tile trading-tile">
             <div class="lp-tile-inner">
                 <div class="lp-tile-top">
                     <div class="lp-tile-icon">📈</div>
                     <div class="lp-tile-tag trading-tag">Trading Desk</div>
                 </div>
+                <!-- C: Live market status badge -->
+                <div class="lp-mkt-badge">
+                    <span class="lp-badge-dot" id="lp-badge-dot"></span>
+                    <span id="lp-badge-text">—</span>
+                </div>
                 <div class="lp-tile-name">SurePath Trading Desk</div>
                 <div class="lp-tile-desc">Proprietary trading tools, position sizing, and performance analytics for active futures and options traders.</div>
                 <div class="lp-tile-footer">
-                    <span class="lp-tile-link">Enter →</span>
-                    <span class="lp-tile-domain">trading.surepath.com</span>
+                    <div class="lp-tile-actions">
+                        <a asp-controller="Trade" asp-action="Analytics" asp-area=""
+                           class="lp-tile-link">Enter →</a>
+                        @if (User.Identity?.IsAuthenticated != true)
+                        {
+                            <form method="post" asp-controller="Auth" asp-action="Demo" asp-area=""
+                                  style="display:inline;">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="lp-demo-pill">Try Demo</button>
+                            </form>
+                        }
+                    </div>
+                    <span class="lp-tile-domain">trading.spe.com</span>
                 </div>
             </div>
             <div class="lp-tile-accent trading-accent"></div>
-        </a>
+        </div>
 
         <!-- COMMERCE -->
         <a class="lp-tile commerce-tile" href="#" onclick="return false;">
@@ -51,7 +94,7 @@
                 <div class="lp-tile-desc">Wholesale product sourcing and distribution. Connecting quality suppliers with retail buyers across the United States.</div>
                 <div class="lp-tile-footer">
                     <span class="lp-tile-link">Visit →</span>
-                    <span class="lp-tile-domain">surepathgoods.com</span>
+                    <span class="lp-tile-domain">goods.spe.com</span>
                 </div>
             </div>
             <div class="lp-tile-accent commerce-accent"></div>
@@ -68,7 +111,7 @@
                 <div class="lp-tile-desc">Cybersecurity consulting, secure software development, and technology solutions for modern businesses.</div>
                 <div class="lp-tile-footer">
                     <span class="lp-tile-link">Coming Soon</span>
-                    <span class="lp-tile-domain">surepathsec.com</span>
+                    <span class="lp-tile-domain">sec.spe.com</span>
                 </div>
             </div>
             <div class="lp-tile-accent security-accent"></div>
@@ -77,7 +120,7 @@
     </div>
 
     <!-- FOOTER -->
-    <div class="lp-footer fadeup fadeup-d2">
+    <div class="lp-footer fadeup fadeup-d3">
         <div class="lp-footer-copy">© 2026 SurePath Enterprises LLC. All rights reserved.</div>
         <div class="lp-footer-links">
             <a href="#">Privacy</a>
@@ -86,3 +129,88 @@
     </div>
 
 </div>
+
+@section Scripts {
+<script>
+// ============================================================
+// A — TYPEWRITER TAGLINE
+// ============================================================
+(function () {
+    const phrases = [
+        "Capital. Commerce. Technology.",
+        "Three divisions. One holding company.",
+        "Long-term enterprise value.",
+        "Modern infrastructure for the serious operator.",
+    ];
+    let pi = 0, ci = 0, deleting = false, pause = 0;
+    const el = document.getElementById('lp-typewriter');
+    if (!el) return;
+
+    function tick() {
+        const phrase = phrases[pi];
+        if (pause > 0) { pause--; setTimeout(tick, 80); return; }
+        if (!deleting) {
+            el.textContent = phrase.slice(0, ++ci);
+            if (ci === phrase.length) { deleting = true; pause = 30; }
+            setTimeout(tick, 60);
+        } else {
+            el.textContent = phrase.slice(0, --ci);
+            if (ci === 0) { deleting = false; pi = (pi + 1) % phrases.length; pause = 6; }
+            setTimeout(tick, 32);
+        }
+    }
+    setTimeout(tick, 700);
+})();
+
+// ============================================================
+// B + C — MARKET STATUS + LIVE ET CLOCK
+// ============================================================
+function lpGetET() {
+    return new Date(new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }));
+}
+function lpIsNYOpen() {
+    const et = lpGetET(), d = et.getDay(), mins = et.getHours() * 60 + et.getMinutes();
+    return d > 0 && d < 6 && mins >= 570 && mins < 960;
+}
+function lpIsFutOpen() {
+    const et = lpGetET(), d = et.getDay(), mins = et.getHours() * 60 + et.getMinutes();
+    if (d === 6) return false;
+    if (mins >= 1020 && mins < 1080) return false;
+    return d === 0 ? mins >= 1080 : true;
+}
+
+function lpUpdateMarket() {
+    const ny = lpIsNYOpen(), fut = lpIsFutOpen();
+
+    const dot  = document.getElementById('lp-mkt-dot');
+    const stat = document.getElementById('lp-mkt-status');
+    if (dot && stat) {
+        if (ny)        { dot.style.cssText = 'background:var(--trading);  box-shadow:0 0 6px var(--trading)';  stat.style.color = 'var(--trading)';  stat.textContent = 'OPEN'; }
+        else if (fut)  { dot.style.cssText = 'background:var(--commerce); box-shadow:0 0 6px var(--commerce)'; stat.style.color = 'var(--commerce)'; stat.textContent = 'FUTURES'; }
+        else           { dot.style.cssText = 'background:var(--text-mute); box-shadow:none';                    stat.style.color = 'var(--text-mute)'; stat.textContent = 'CLOSED'; }
+    }
+
+    const bdot  = document.getElementById('lp-badge-dot');
+    const btext = document.getElementById('lp-badge-text');
+    if (bdot && btext) {
+        if (ny)       { bdot.className = 'lp-badge-dot open'; btext.textContent = 'NY Open'; }
+        else if (fut) { bdot.className = 'lp-badge-dot fut';  btext.textContent = 'Futures Active'; }
+        else          { bdot.className = 'lp-badge-dot';      btext.textContent = 'Markets Closed'; }
+    }
+}
+
+function lpTickClock() {
+    const el = document.getElementById('lp-et-clock');
+    if (!el) return;
+    const et = lpGetET();
+    el.textContent = String(et.getHours()).padStart(2,'0') + ':'
+                   + String(et.getMinutes()).padStart(2,'0') + ':'
+                   + String(et.getSeconds()).padStart(2,'0');
+}
+
+lpUpdateMarket();
+lpTickClock();
+setInterval(lpTickClock, 1000);
+setInterval(lpUpdateMarket, 60000);
+</script>
+}

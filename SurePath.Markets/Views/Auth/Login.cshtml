@@ -1,0 +1,306 @@
+@model SurePath.Markets.Controllers.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In";
+    Layout = "_CorpLayout";
+}
+
+<div class="auth-page">
+
+    <div class="auth-bg">
+        <div class="lp-bg-grid"></div>
+        <div class="lp-bg-glow"></div>
+    </div>
+
+    <div class="auth-card fadeup">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            <div class="lp-logo-mark" style="width:48px;height:48px;font-size:20px;margin:0 auto 20px;">SP</div>
+            <div class="auth-brand">SurePath Enterprises</div>
+            <div class="auth-sub">Sign in to SurePath Markets</div>
+        </div>
+
+        <!-- Error summary -->
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="auth-error">
+                @foreach (var err in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <span>@err.ErrorMessage</span>
+                }
+            </div>
+        }
+
+        <!-- Login form -->
+        <form method="post" asp-controller="Auth" asp-action="Login"
+              asp-route-returnUrl="@ViewData["ReturnUrl"]" class="auth-form">
+            @Html.AntiForgeryToken()
+
+            <div class="auth-field">
+                <label class="auth-label">Email</label>
+                <input asp-for="Email" type="email" class="auth-input"
+                       placeholder="you@spe.com" autocomplete="email" autofocus />
+            </div>
+
+            <div class="auth-field">
+                <label class="auth-label">Password</label>
+                <input asp-for="Password" type="password" class="auth-input"
+                       placeholder="••••••••" autocomplete="current-password" />
+            </div>
+
+            <div class="auth-row">
+                <label class="auth-check">
+                    <input asp-for="RememberMe" type="checkbox" />
+                    <span>Remember me</span>
+                </label>
+            </div>
+
+            <button type="submit" class="auth-btn-primary">Sign In →</button>
+
+            <div class="auth-register-row">
+                <span>New here?</span>
+                <a asp-area="Identity" asp-page="/Account/Register" class="auth-register-link">Create an account →</a>
+            </div>
+        </form>
+
+        <!-- Divider -->
+        <div class="auth-divider">
+            <span>or</span>
+        </div>
+
+        <!-- Demo entry -->
+        <form method="post" asp-controller="Auth" asp-action="Demo">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="auth-btn-demo">
+                <span class="auth-demo-dot"></span>
+                Enter as Demo Trader
+            </button>
+        </form>
+
+        <div class="auth-footer-note">
+            Demo account includes 14 sample trades. Changes are not saved.
+        </div>
+
+    </div>
+
+</div>
+
+@section Styles {
+<style>
+/* ── Auth page ── */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 24px 40px;
+    position: relative;
+}
+
+.auth-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.auth-card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 400px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 40px 36px 32px;
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 28px;
+}
+
+.auth-brand {
+    font-family: var(--font-head);
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 6px;
+}
+
+.auth-sub {
+    font-size: 11px;
+    color: var(--text-mute);
+    letter-spacing: 0.3px;
+}
+
+.auth-error {
+    background: rgba(224, 92, 92, 0.1);
+    border: 1px solid rgba(224, 92, 92, 0.3);
+    border-radius: 6px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 11px;
+    color: #e05c5c;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-label {
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--text-mute);
+}
+
+.auth-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.auth-input:focus {
+    border-color: var(--border2);
+}
+
+.auth-input::placeholder {
+    color: var(--text-mute);
+}
+
+.auth-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.auth-check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: var(--text-dim);
+    cursor: pointer;
+}
+
+.auth-check input[type="checkbox"] {
+    accent-color: var(--trading);
+}
+
+.auth-btn-primary {
+    background: #fff;
+    color: #07090d;
+    border: none;
+    border-radius: 6px;
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    padding: 11px 0;
+    cursor: pointer;
+    transition: opacity 0.15s;
+    letter-spacing: -0.2px;
+    margin-top: 4px;
+}
+
+.auth-btn-primary:hover {
+    opacity: 0.88;
+}
+
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0 16px;
+    color: var(--text-mute);
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.auth-btn-demo {
+    width: 100%;
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: 6px;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 10px 0;
+    cursor: pointer;
+    transition: all 0.15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.auth-btn-demo:hover {
+    border-color: var(--trading);
+    color: var(--trading);
+}
+
+.auth-demo-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--trading);
+    box-shadow: 0 0 6px var(--trading);
+    flex-shrink: 0;
+    animation: lpBadgePulse 2s ease-in-out infinite;
+}
+
+.auth-register-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+    font-size: 11px;
+    color: var(--text-mute);
+}
+
+.auth-register-link {
+    color: var(--text-dim);
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.auth-register-link:hover {
+    color: var(--text);
+}
+
+.auth-footer-note {
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-mute);
+    margin-top: 14px;
+    letter-spacing: 0.3px;
+}
+</style>
+}
